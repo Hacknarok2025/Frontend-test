@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "./types";
-
+// @ts-ignore
 const fetchFromApi = async <T>(path: string) => {
   const url = API_BASE_URL + path;
   try {
