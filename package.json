@@ -1,4 +1,5 @@
 {
+  "homepage": "http://Hacknarok2025.github.io/Frontend-test",
   "name": "hacknarok-test",
   "private": true,
   "version": "0.0.0",
@@ -6,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages —d dist",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -21,6 +24,7 @@
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "gh-pages": "^6.3.0",
     "globals": "^15.15.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
