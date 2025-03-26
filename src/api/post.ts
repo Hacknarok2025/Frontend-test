@@ -3,8 +3,6 @@ import { API_BASE_URL, numbersType as NumbersType } from "./types";
 const postToApi = async <T, U>(path: string, body: T) => {
   const url = API_BASE_URL + path;
 
-  console.log("VITE", url);
-
   try {
     const response = await fetch(url, {
       method: "POST",
