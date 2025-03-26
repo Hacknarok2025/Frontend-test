@@ -1,4 +1,4 @@
-import { API_BASE_URL, numbersType as NumbersType } from "./types";
+import { API_BASE_URL, NumbersType as NumbersType, ResultType } from "./types";
 
 const postToApi = async <T, U>(path: string, body: T) => {
   const url = API_BASE_URL + path;
@@ -32,7 +32,7 @@ const postToApi = async <T, U>(path: string, body: T) => {
 };
 
 export const postForResult = (body: NumbersType) => {
-  return postToApi<NumbersType, number>("/calculate", body);
+  return postToApi<NumbersType, ResultType>("/calculate", body);
 };
 
 // export const postText = (body: TextType) => {

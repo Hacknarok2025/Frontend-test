@@ -14,7 +14,7 @@ function App() {
 
       console.log(newResult);
 
-      setResult(newResult);
+      setResult(newResult.result);
     } catch (error) {
       console.log(error);
     }
