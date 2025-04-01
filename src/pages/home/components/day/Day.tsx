@@ -1,10 +1,22 @@
+import { EventType } from '@/api/types';
 import { useRef } from 'react';
+import EventCard from './EventCard';
 
 type DayProps = {
   name: string;
+  handleAddEvent: ({
+    hours,
+    minutes,
+    day,
+  }: {
+    hours: number;
+    minutes: number;
+    day: string;
+  }) => void;
+  events: EventType[];
 };
 
-const Day = ({ name }: DayProps) => {
+const Day = ({ name, handleAddEvent, events }: DayProps) => {
   const divRef = useRef(null);
 
   const parseToTime = (percentage: number) => {
@@ -26,17 +38,50 @@ const Day = ({ name }: DayProps) => {
 
     const time = parseToTime(percentage);
 
+    handleAddEvent({ hours: time.hours, minutes: time.minutes, day: name });
+
     console.log(time.hours, time.minutes, name);
+  };
+
+  // backwards
+
+  const parseToPercentage = (time: string): number => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return ((hours * 60 + minutes) / (24 * 60)) * 100;
+  };
+
+  const getPixels = (time: string): number => {
+    const height = divRef.current?.clientHeight || 0;
+    const offsetY = (parseToPercentage(time) / 100) * height;
+    console.log('Offset:', offsetY);
+    return offsetY;
   };
 
   return (
     <div className="flex-1 border-l-2 border-gray-950">
       <div className="text-center h-[25px]">{name}</div>
       <div
-        className="bg-gray-800 text-white h-[1000px]"
+        className="bg-gray-800 text-white h-[1000px] relative"
         ref={divRef}
         onClick={handleClick}
-      ></div>
+      >
+        {events
+          .filter((ev) => ev.day === name)
+          .map((ev) => (
+            <div
+              key={ev.start_time}
+              className="relative w-full"
+              style={{
+                top: `${getPixels(ev.start_time)}px`,
+                height: `${
+                  getPixels(ev.end_time) - getPixels(ev.start_time)
+                }px`,
+              }}
+            >
+              <EventCard event={ev} />
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
