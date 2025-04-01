@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { postForResult } from "./api/post";
+import { Button } from "./components/ui/button";
 
 function App() {
   const [result, setResult] = useState<number | null>(null);
@@ -22,7 +23,8 @@ function App() {
 
   return (
     <>
-      <h3>Siemano, masz tu kalkulator</h3>
+      <Button variant="default">Siema</Button>
+      <h3 className="bg-red-500">Siemano, masz tu kalkulator</h3>
       <input
         type="number"
         onChange={(e) => setNumber1(parseFloat(e.currentTarget.value))}
