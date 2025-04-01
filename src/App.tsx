@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { postForResult } from "./api/post";
 import { Button } from "./components/ui/button";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
 
 function App() {
   const [result, setResult] = useState<number | null>(null);
@@ -23,22 +25,9 @@ function App() {
 
   return (
     <>
-      <Button variant="default">Siema</Button>
-      <h3 className="bg-red-500">Siemano, masz tu kalkulator</h3>
-      <input
-        type="number"
-        onChange={(e) => setNumber1(parseFloat(e.currentTarget.value))}
-        value={number1 || ""}
-      />
-      {" + "}
-      <input
-        type="number"
-        onChange={(e) => setNumber2(parseFloat(e.currentTarget.value))}
-        value={number2 || ""}
-      />
-      {" = "}
-      <span>{result}</span>
-      <button onClick={fetchResult}>Policz</button>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </>
   );
 }
