@@ -17,7 +17,7 @@ type DayProps = {
 };
 
 const Day = ({ name, handleAddEvent, events }: DayProps) => {
-  const divRef = useRef(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
   const parseToTime = (percentage: number) => {
     const hours = Math.floor((percentage / 100) * 24);
@@ -29,7 +29,7 @@ const Day = ({ name, handleAddEvent, events }: DayProps) => {
     return { hours, minutes };
   };
 
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return;
 
     const { offsetY } = e.nativeEvent;
