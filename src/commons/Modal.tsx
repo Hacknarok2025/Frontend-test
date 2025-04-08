@@ -43,27 +43,17 @@ const Modal: React.FC<ModalProps> = ({
 
   const handlePutToApi = async () => {
     try {
-      putNewEvent({
+      const obj = {
         title: formData.title,
         description: formData.description,
         day: formData.day,
         start_time: formData.from,
         end_time: formData.to,
-      })
-        .then((response) => {
-          console.log('Odpowiedź z API:', response);
-          setFormData({
-            title: '',
-            from: '',
-            to: '',
-            day: '',
-            description: '',
-          });
-          setOpen(false);
-        })
-        .catch((error) => {
-          console.error('Błąd podczas wysyłania do API:', error);
-        });
+      };
+
+      console.log(obj);
+
+      await putNewEvent(obj);
     } catch (e) {
       console.log(e);
     }

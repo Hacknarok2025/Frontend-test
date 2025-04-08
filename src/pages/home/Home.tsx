@@ -15,34 +15,11 @@ const DAYS_OF_WEEK = [
   'Sunday',
 ];
 
-const EVENTS_TEMP = [
-  {
-    title: 'Team Meeting',
-    description: 'Project progress discussion',
-    day: 'Tuesday',
-    start_time: '03:00',
-    end_time: '07:30',
-  },
-  {
-    title: 'Coding Workshop',
-    description: null,
-    day: 'Wednesday',
-    start_time: '14:00',
-    end_time: '20:00',
-  },
-  {
-    title: 'Hairdresser Appointment',
-    description: 'Haircut and styling',
-    day: 'Thursday',
-    start_time: '12:00',
-    end_time: '13:30',
-  },
-];
-
 const Home = () => {
   const [events, setEvents] = useState<EventType[]>([]);
 
   const handleFetchEvents = async () => {
+    console.log('fetch');
     try {
       const data: EventType[] = await fetchEvents();
 
@@ -54,8 +31,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    // handleFetchEvents();
-    setEvents(EVENTS_TEMP);
+    handleFetchEvents();
   }, []);
 
   const [isOpenModal, setIsOpenModal] = useState(false);
