@@ -1,5 +1,5 @@
 {
-  "homepage": "http://Hacknarok2025.github.io/Frontend-test",
+  "homepage": "http://Hacknarok2025.github.io",
   "name": "hacknarok-test",
   "private": true,
   "version": "0.0.0",
@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
+    "deploy": "gh-pages -d dist -r https://github.com/Hacknarok2025/Hacknarok2025.github.io.git",
     "lint": "eslint .",
     "preview": "vite preview"
   },
