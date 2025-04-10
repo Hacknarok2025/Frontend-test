@@ -1,4 +1,7 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL;
+// ustawić w zależności czy testujemy lokalnie czy na produkcji
+
+// export const API_BASE_URL = import.meta.env.VITE_API_URL;
+export const API_BASE_URL = import.meta.env.VITE_API_URL_TEST;
 
 export type NumbersType = { number1: number; number2: number };
 
