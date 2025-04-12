@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,11 +119,25 @@
 }
 
 @layer base {
+  @font-face {
+    font-family: 'Norse';
+    src: url('/fonts/Norse-KaWl.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Norse';
+    src: url('/fonts/NorseBold-2Kge.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+  }
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+    font-family: 'Norse', sans-serif;
     @apply border-border outline-ring/50;
   }
   body {
