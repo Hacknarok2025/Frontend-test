@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
@@ -48,20 +48,21 @@ const LevelCircle = ({
       disabled ? "bg-gray-400" : "bg-black group-hover:bg-white"
   }`;
 
-  const labelClass = `flex justify-center hover:bg-white hover:text-black items-center w-60 h-10 text-lg font-bold skew-x-12 text-center transition-all duration-500 ${
+  const labelClass = `flex justify-center  items-center w-60 h-10 text-lg font-bold skew-x-12 text-center transition-all duration-500 ${
       disabled
-          ? "bg-gray-400 text-gray-700"
-          : "bg-black text-white group-hover:bg-white group-hover:text-black"
+          ? "bg-gray-400 text-gray-700  "
+          : "bg-black text-white  hover:bg-white hover:text-black group-hover:text-black"
   }`;
 
   const handleImageClick = (e: React.MouseEvent) => {
     e.preventDefault(); // zapobiega przeładowaniu linka
     if (!disabled) {
       setIsExpanded(true);
+        setTimeout(() => {
+            navigate(`/level${level}`);
+        }, 2000);
     }
-      setTimeout(() => {
-          navigate(`/level${level}`);
-      }, 2000);
+
   };
 
   const content = (
@@ -70,7 +71,7 @@ const LevelCircle = ({
           <motion.img
               src={`/imgs/level${level}.webp`}
               alt={`Level ${level}`}
-              className="w-full h-full object-cover opacity-100"
+              className="w-full h-full object-cover opacity-100 "
               style={disabled ? { opacity: 0.5 } : {}}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/imgs/placeholder.png";

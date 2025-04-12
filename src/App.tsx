@@ -10,7 +10,7 @@ import Level8 from './pages/level8/Level8.tsx';
 import Level9 from "@/pages/level9/Level9.tsx";
 
 function Level2() {
-    return null;
+  return null;
 }
 function Level3() {
   return null;
