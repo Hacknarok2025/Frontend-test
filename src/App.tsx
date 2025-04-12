@@ -9,7 +9,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/tree" element={<Tree />} />
+
+
+
         <Route path="/level1" element={<Level1 />} />
+
       </Routes>
     </div>
   );
