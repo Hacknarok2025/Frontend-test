@@ -42,7 +42,6 @@ const Level6 = () => {
     };
 
 
-
     useEffect(() => {
         const img = new Image();
         img.src = '/imgs/level6.webp';
