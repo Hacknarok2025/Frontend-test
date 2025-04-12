@@ -21,7 +21,7 @@ const Home = () => {
                     allow="autoplay; "
                     allowFullScreen
                 />
-                    {/* Nakładka dla lepszej czytelności tekstu */}
+                {/* Nakładka dla lepszej czytelności tekstu */}
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
             </div>
 
@@ -35,10 +35,14 @@ const Home = () => {
                     </p>
                 </div>
                 <div className="self-end relative right-20">
-                    <Button onClick={()=>{setModalOpen(true)
-                    }} add={"px-18 text-white border-5 border-solid border-black hover:border-white "}  size={"6xl"}>Continue Game</Button>
-                    <Button onClick={()=>{setModalOpen(true)
-                    }} add={"px-18 text-black border-5 border-solid border-white bg-white hover:border-black"}  size={"6xl"}>Start Game</Button>
+                    <Button onClick={() => {
+                        setModalOpen(true)
+                    }} add={"px-18 text-white border-5 border-solid border-black hover:border-white "} size={"6xl"}>Continue
+                        Game</Button>
+                    <Button onClick={() => {
+                        setModalOpen(true)
+                    }} add={"px-18 text-black border-5 border-solid border-white bg-white hover:border-black"}
+                            size={"6xl"}>Start Game</Button>
                 </div>
             </div>
             <Modal
@@ -47,3 +51,6 @@ const Home = () => {
             />
         </>
     );
+}
+
+export default Home
