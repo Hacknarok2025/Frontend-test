@@ -99,7 +99,7 @@ const LevelCircle = ({
                 whileHover="hover"
                 whileTap="tap"
             >
-              <Link to={`/level${level}`} style={{ textDecoration: "none" }}>
+              <div style={{ textDecoration: "none" }}>
                 <motion.div
                     variants={clickVariants}
                     animate="initial"
@@ -107,7 +107,7 @@ const LevelCircle = ({
                 >
                   {content}
                 </motion.div>
-              </Link>
+              </div>
             </motion.div>
         )}
 
