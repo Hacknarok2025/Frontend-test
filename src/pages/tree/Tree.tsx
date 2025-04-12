@@ -1,4 +1,4 @@
-import React from 'react';
+
 import LevelCircle from './components/level-circle/LevelCircle';
 
 const Tree = () => {
@@ -25,7 +25,7 @@ const Tree = () => {
             level={l}
             top={positions[l].top}
             left={positions[l].left}
-            disabled={l > 5}
+            disabled={l > 6}
           />
         );
       })}
