@@ -1,10 +1,15 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
 
 const CELL_SIZE = 50;
 const COLS = 10;
 const ROWS = 10;
+const MOVE_SPEED = 8; // Zwiększona prędkość ruchu
+// Adjusted collision padding for better detection
+const COLLISION_PADDING = 3; // Increased to better detect obstacles
+const POINTS_PER_HAMMER = 25; // Punkty za każdy młot
+const MAX_POINTS = 100; // Maksymalna liczba punktów
 
 interface Player {
   x: number;
@@ -32,9 +37,11 @@ const Level3 = () => {
   const [score, setScore] = useState(0);
   const playerImage = useRef<p5Types.Image | null>(null);
   const collectibleImage = useRef<p5Types.Image | null>(null);
+  const p5Instance = useRef<p5Types | null>(null);
   
   // Setup grid with obstacles and collectibles
   const setup = (p5: p5Types, canvasParentRef: Element) => {
+    p5Instance.current = p5;
     p5.createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE).parent(canvasParentRef);
     
     // Load images
@@ -62,7 +69,7 @@ const Level3 = () => {
       { x: 5 * CELL_SIZE + CELL_SIZE/2, y: 2 * CELL_SIZE + CELL_SIZE/2, collected: false },
       { x: 8 * CELL_SIZE + CELL_SIZE/2, y: 3 * CELL_SIZE + CELL_SIZE/2, collected: false },
       { x: 2 * CELL_SIZE + CELL_SIZE/2, y: 5 * CELL_SIZE + CELL_SIZE/2, collected: false },
-      { x: 7 * CELL_SIZE + CELL_SIZE/2, y: 7 * CELL_SIZE + CELL_SIZE/2, collected: false }
+      { x: 7 * CELL_SIZE + CELL_SIZE/2 - 5, y: 7 * CELL_SIZE + CELL_SIZE/2 - 5, collected: false } // Adjusted position slightly
     ];
     
     setCollectibles(newCollectibles);
@@ -126,23 +133,39 @@ const Level3 = () => {
     // Handle movement logic
     if (player.isMoving) {
       // Calculate next position
-      const nextX = player.x + player.direction.x * 5;
-      const nextY = player.y + player.direction.y * 5;
+      const nextX = player.x + player.direction.x * MOVE_SPEED;
+      const nextY = player.y + player.direction.y * MOVE_SPEED;
       
-      // Convert pixel position to grid position
-      const gridX = Math.floor(nextX / CELL_SIZE);
-      const gridY = Math.floor(nextY / CELL_SIZE);
+      // Check if out of bounds
+      const isOutOfBounds = 
+        nextX - CELL_SIZE/2 < 0 || 
+        nextX + CELL_SIZE/2 > COLS * CELL_SIZE ||
+        nextY - CELL_SIZE/2 < 0 ||
+        nextY + CELL_SIZE/2 > ROWS * CELL_SIZE;
       
-      // Check if we hit a wall or boundary
-      const hitObstacle = 
-        gridX < 0 || 
-        gridX >= COLS || 
-        gridY < 0 || 
-        gridY >= ROWS ||
-        (grid[gridY] && grid[gridY][gridX]);
-        
-      if (hitObstacle) {
-        // Stop at the current position
+      // Check for collision with obstacles
+      const playerSize = CELL_SIZE / COLLISION_PADDING;
+      const checkPoints = [
+        { x: nextX - playerSize/2, y: nextY - playerSize/2 }, // Top left
+        { x: nextX + playerSize/2, y: nextY - playerSize/2 }, // Top right
+        { x: nextX - playerSize/2, y: nextY + playerSize/2 }, // Bottom left
+        { x: nextX + playerSize/2, y: nextY + playerSize/2 }  // Bottom right
+      ];
+      
+      // Check if any corner of the player is inside an obstacle
+      let collidesWithObstacle = isOutOfBounds;
+      
+      if (!isOutOfBounds) {
+        collidesWithObstacle = checkPoints.some(point => {
+          const gridX = Math.floor(point.x / CELL_SIZE);
+          const gridY = Math.floor(point.y / CELL_SIZE);
+          return gridX >= 0 && gridX < COLS && gridY >= 0 && gridY < ROWS && 
+                 grid[gridY] && grid[gridY][gridX];
+        });
+      }
+      
+      if (collidesWithObstacle) {
+        // Stop moving if hitting an obstacle
         setPlayer(prev => ({
           ...prev,
           isMoving: false,
@@ -167,10 +190,10 @@ const Level3 = () => {
       prevCollectibles.map(collectible => {
         if (
           !collectible.collected &&
-          Math.abs(collectible.x - x) < 20 &&
-          Math.abs(collectible.y - y) < 20
+          Math.abs(collectible.x - x) < 35 && // Increased detection radius from 25 to 35
+          Math.abs(collectible.y - y) < 35    // Increased detection radius from 25 to 35
         ) {
-          setScore(prev => prev + 1);
+          setScore(prev => prev + POINTS_PER_HAMMER);
           return { ...collectible, collected: true };
         }
         return collectible;
@@ -178,37 +201,53 @@ const Level3 = () => {
     );
   };
   
-  const keyPressed = useCallback((p5: p5Types) => {
+  // Obsługa klawiszy strzałek i WASD z poprawną zależnością
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
     // Only accept input when player is not moving
-    if (!player.isMoving) {
-      let newDirection = { x: 0, y: 0 };
-      
-      // Handle arrow key or WASD inputs
-      if (p5.keyCode === p5.UP_ARROW || p5.key.toLowerCase() === 'w') {
-        newDirection = { x: 0, y: -1 };
-      } else if (p5.keyCode === p5.DOWN_ARROW || p5.key.toLowerCase() === 's') {
-        newDirection = { x: 0, y: 1 };
-      } else if (p5.keyCode === p5.LEFT_ARROW || p5.key.toLowerCase() === 'a') {
-        newDirection = { x: -1, y: 0 };
-      } else if (p5.keyCode === p5.RIGHT_ARROW || p5.key.toLowerCase() === 'd') {
-        newDirection = { x: 1, y: 0 };
-      }
-      
-      // Only start moving if a direction key was pressed
-      if (newDirection.x !== 0 || newDirection.y !== 0) {
-        setPlayer(prev => ({
-          ...prev,
-          isMoving: true,
-          direction: newDirection
-        }));
-      }
+    if (player.isMoving) return;
+    
+    let newDirection = { x: 0, y: 0 };
+    
+    // Handle arrow key or WASD inputs
+    const key = e.key.toLowerCase();
+    
+    if (key === 'arrowup' || key === 'w') {
+      newDirection = { x: 0, y: -1 };
+    } else if (key === 'arrowdown' || key === 's') {
+      newDirection = { x: 0, y: 1 };
+    } else if (key === 'arrowleft' || key === 'a') {
+      newDirection = { x: -1, y: 0 };
+    } else if (key === 'arrowright' || key === 'd') {
+      newDirection = { x: 1, y: 0 };
     }
-  }, [player]);
+    
+    // Only start moving if a direction key was pressed
+    if (newDirection.x !== 0 || newDirection.y !== 0) {
+      setPlayer(prev => ({
+        ...prev,
+        isMoving: true,
+        direction: newDirection
+      }));
+    }
+  }, [player.isMoving]);
+
+  // Rejestrujemy obsługę klawiszy w window jako Event Listener
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+  
+  // Oryginalna funkcja keyPressed dla zgodności z p5
+  const keyPressed = () => {
+    // Ta funkcja będzie pusta, ponieważ obsługujemy klawisze przez event listener
+  };
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-blue-900">
       <h1 className="text-4xl font-bold text-white mb-4">Jotunheim - Ice Slide</h1>
-      <div className="mb-4 text-white text-xl">Mjolnir Pieces: {score}/{collectibles.length}</div>
+      <div className="mb-4 text-white text-xl">Punkty: {score}/{MAX_POINTS}</div>
       <Sketch setup={setup as any} draw={draw as any} keyPressed={keyPressed as any} />
       <div className="mt-4 text-white text-lg">
         Use arrow keys or WASD to slide across the ice. Collect all the Mjolnir pieces!
