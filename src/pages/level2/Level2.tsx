@@ -17,6 +17,8 @@ const Level2 = () => {
   const hammerImage = useRef<p5Types.Image | null>(null);
   const p5Instance = useRef<p5Types | null>(null);
   const canvasParentRef = useRef<Element | null>(null);
+  const lastMoveTime = useRef(0);
+  const MOVE_COOLDOWN = 50; // 50ms cooldown between moves
 
   const generateMaze = () => {
     const maze = Array(ROWS)
@@ -200,7 +202,12 @@ const Level2 = () => {
   };
 
   const keyPressed = useCallback((p5: p5Types) => {
-    const speed = CELL_SIZE / 2;
+    const currentTime = Date.now();
+    if (currentTime - lastMoveTime.current < MOVE_COOLDOWN) {
+      return; // Still in cooldown, ignore this movement
+    }
+
+    const speed = CELL_SIZE;
     let newX = gameState.current.player.x;
     let newY = gameState.current.player.y;
 
@@ -247,6 +254,7 @@ const Level2 = () => {
     if (canMove) {
       gameState.current.player.x = newX;
       gameState.current.player.y = newY;
+      lastMoveTime.current = currentTime;
       checkWinCondition();
     }
   }, []); // No dependencies needed as we're using refs
