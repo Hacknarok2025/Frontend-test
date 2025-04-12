@@ -1,5 +1,5 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  add?: any;
+  add?: string;
 }
 
 const Button = ({ children, onClick, add }: ButtonProps) => {
