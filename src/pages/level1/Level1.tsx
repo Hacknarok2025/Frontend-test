@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Button from '../../components/own/button';
+import Modal3 from "@/commons/Modal3.tsx";
+import { motion, AnimatePresence } from "framer-motion";
 
-//TODO zmienić wielkość okienka wokół liter - za duże, zmienić kolor wokół na czarny?
 const Level1 = () => {
-  // Pool of Nordic-themed words to randomly select from
   const wordPool = [
     'HUGIN',
     'ODIN',
@@ -28,14 +28,23 @@ const Level1 = () => {
   ];
 
   const [userAnswer, setUserAnswer] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [secretWord, setSecretWord] = useState('');
   const [runeWord, setRuneWord] = useState('');
   const [timeLeft, setTimeLeft] = useState(30);
   const [gameOver, setGameOver] = useState(false);
+  const [isModalOpen3, setModalOpen3] = useState(false);
+  const [isModalOpen4, setModalOpen4] = useState(false);
+  const [timeWhenCompleted, setTimeWhenCompleted] = useState<number>(null);
+  const [finalScore, setFinalScore] = useState<number>(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Mapping of Latin letters to runes (simplified Elder Futhark representation)
+  const calculateScore = (remainingTime: number) => {
+    return Math.round(Math.min(155 - (30 - remainingTime) * 5.166, 100));
+  };
+
   const runeMapping: Record<string, string> = {
     A: 'ᚨ',
     B: 'ᛒ',
@@ -65,173 +74,314 @@ const Level1 = () => {
     Z: 'ᛉ',
   };
 
-  // Select a random word from the pool when component mounts
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * wordPool.length);
     const selectedWord = wordPool[randomIndex];
     setSecretWord(selectedWord);
 
-    // Convert the secret word to runes
     const runicVersion = selectedWord
-      .split('')
-      .map((char) => runeMapping[char] || char)
-      .join('');
+        .split('')
+        .map((char) => runeMapping[char] || char)
+        .join('');
     setRuneWord(runicVersion);
   }, []);
 
-  // Timer effect
   useEffect(() => {
     if (timeLeft <= 0) {
       setGameOver(true);
-      setMessage('Time is up! You failed to solve the puzzle.');
+      setModalOpen4(true);
       return;
     }
 
-    if (completed || gameOver) return;
+    if (gameOver || completed) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      return;
+    }
 
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, [timeLeft, completed, gameOver]);
+
+  useEffect(() => {
+    if (completed) {
+      setTimeWhenCompleted(timeLeft);
+      setFinalScore(calculateScore(timeLeft));
+      setShowConfetti(true);
+      setTimeout(() => setModalOpen3(true), 1500);
+    }
+  }, [completed]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserAnswer(e.target.value);
   };
 
+  const [shake, setShake] = useState(false);
+
   const checkAnswer = () => {
     if (userAnswer.toUpperCase() === secretWord) {
       setCompleted(true);
-      setMessage('Correct! You deciphered the word!');
     } else {
-      setMessage('Try again. That is not the correct word.');
+      // Uruchom animację trzęsienia
+      setShake(true);
+      setTimeout(() => setShake(false), 1000); // Reset po animacji
     }
   };
 
+  const shakeVariants = {
+    shake: {
+      x: [0, -10, 10, -10, 10, -5, 5, 0],
+      transition: {
+        duration: 0.5
+      }
+    },
+    normal: {
+      x: 0
+    }
+  };
   const resetGame = () => {
-    // Reset the game state
     setUserAnswer('');
-    setMessage('');
     setCompleted(false);
     setGameOver(false);
     setTimeLeft(30);
+    setTimeWhenCompleted(null);
+    setFinalScore(0);
+    setShowConfetti(false);
 
-    // Select a new random word
     const randomIndex = Math.floor(Math.random() * wordPool.length);
     const selectedWord = wordPool[randomIndex];
     setSecretWord(selectedWord);
 
-    // Convert the secret word to runes
     const runicVersion = selectedWord
-      .split('')
-      .map((char) => runeMapping[char] || char)
-      .join('');
+        .split('')
+        .map((char) => runeMapping[char] || char)
+        .join('');
     setRuneWord(runicVersion);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
+  const runeVariants = {
+    hidden: { scale: 0.8, opacity: 0 },
+    visible: (i: number) => ({
+      scale: 1,
+      opacity: 1,
+      transition: {
+        delay: i * 0.05,
+        type: "spring",
+        stiffness: 100
+      }
+    })
+  };
+
   return (
-    <div
-      className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden"
-      style={{
-        backgroundImage: "url('/imgs/level1.webp')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      <div className="bg-white bg-opacity-80 p-4 md:p-6 rounded-lg shadow-xl max-w-4xl w-full mx-4 h-[90vh] flex flex-col">
-        <h1
-          className="text-3xl font-bold mb-2 text-center"
-          style={{ fontFamily: 'Norse, serif' }}
-        >
-          Nordic Puzzle
-        </h1>
-
-        <div className="mb-2 text-center">
-          <div className="text-xl font-bold text-red-600">
-            Time remaining: {timeLeft} seconds
-          </div>
-        </div>
-
-        <div className="mb-2 text-center bg-black text-white p-3 rounded-lg">
-          <p className="text-base mb-2">
-            Discover the hidden word by deciphering these runes:
-          </p>
-          <div
-            className="text-4xl my-2 tracking-wider"
-            style={{ fontFamily: 'Norse, serif' }}
-          >
-            {runeWord}
-          </div>
-        </div>
-
-        <div className="mb-3 border-2 border-gray-300 rounded-lg flex-grow overflow-auto flex flex-col">
-          <h2 className="text-xl mb-1 text-center pt-1">Runic Alphabet</h2>
-          <div className="grid grid-cols-6 gap-1 sm:grid-cols-8 md:grid-cols-13 text-sm px-2 pb-2">
-            {Object.entries(runeMapping).map(([letter, rune]) => (
-              <div
-                key={letter}
-                className="text-center p-1 border border-gray-300 rounded"
-              >
-                <div className="text-lg">{rune}</div>
-                <div className="text-xs">{letter}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {!completed && !gameOver ? (
-          <div className="flex flex-col items-center">
-            <div className="flex items-center w-full max-w-md">
-              <input
-                type="text"
-                value={userAnswer}
-                onChange={handleInputChange}
-                className="flex-grow px-3 py-1 border-2 border-gray-400 rounded mr-2"
-                placeholder="Enter your answer..."
-              />
-              <Button
-                onClick={checkAnswer}
-                add="bg-blue-700 text-white hover:bg-blue-800 text-sm py-1"
-              >
-                Check
-              </Button>
+      <div
+          className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden relative"
+          style={{
+            backgroundImage: "url('/imgs/level1.webp')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+      >
+        {showConfetti && (
+            <div className="confetti absolute inset-0 pointer-events-none">
+              {[...Array(100)].map((_, i) => (
+                  <div
+                      key={i}
+                      className="confetti-piece absolute"
+                      style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                        width: `${Math.random() * 10 + 5}px`,
+                        height: `${Math.random() * 10 + 5}px`,
+                        backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                        transform: `rotate(${Math.random() * 360}deg)`,
+                        animation: `fall ${Math.random() * 3 + 2}s linear forwards`,
+                        animationDelay: `${Math.random() * 0.5}s`
+                      }}
+                  />
+              ))}
             </div>
-            {message && (
-              <p
-                className={`mt-1 text-sm ${
-                  message.includes('Correct')
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}
-              >
-                {message}
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="text-center mb-2">
-            {completed ? (
-              <>
-                <p className="text-xl text-green-600 mb-2">
-                  Congratulations! You solved the puzzle!
-                </p>
-                <p className="text-lg mb-2">Word: {secretWord}</p>
-              </>
-            ) : (
-              <p className="text-xl text-red-600 mb-2">{message}</p>
-            )}
-            <Button
-              onClick={resetGame}
-              add="bg-green-600 text-white hover:bg-green-700 text-sm py-1"
-            >
-              Play again
-            </Button>
-          </div>
         )}
+
+        <div
+
+            className="px-36 py-3 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-7xl w-full max-h-[95vh]"
+        >
+          <motion.div
+              className="skew-x-12 flex flex-col"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+          >
+            <motion.h1
+                className="text-5xl font-bold mb-2 text-center"
+                style={{ fontFamily: 'Norse, serif' }}
+                variants={itemVariants}
+            >
+              Nordic Puzzle
+            </motion.h1>
+
+            <motion.div className="  s mb-2 text-center" variants={itemVariants}>
+              <motion.div
+                  className="text-6xl font-bold text-red-600"
+                  animate={shake ? "shake" : "normal"}
+                  variants={shakeVariants}
+              >
+                Time remaining: {timeLeft} seconds
+              </motion.div>
+            </motion.div>
+            <motion.div
+                className="mb-2 skew-x-[-12deg] text-center bg-black text-white p-3"
+                variants={itemVariants}
+            >
+              <p className=" text-2xl mb-2">
+                Discover the hidden word by deciphering these runes:
+              </p>
+              <motion.div
+                  className="text-6xl skew-x-12 my-2 tracking-wider flex justify-center"
+                  style={{ fontFamily: 'Norse, serif' }}
+              >
+                {runeWord.split('').map((rune, i) => (
+                    <motion.span
+                        key={i}
+                        custom={i}
+                        variants={runeVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                      {rune}
+                    </motion.span>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+                className="p-1 flex-grow flex flex-col"
+                variants={itemVariants}
+            >
+              <h2 className="text-7xl mb-2 text-center pt-1">Runic Alphabet</h2>
+              <div className="grid grid-cols-7 gap-2 text-3xl px-2 pb-2">
+                {Object.entries(runeMapping).map(([letter, rune], index) => (
+                    <motion.div
+                        key={letter}
+                        className="text-center p-1 border border-gray-300 rounded"
+                        variants={itemVariants}
+                        custom={index}
+                    >
+                      <div className="text-4xl">{rune}</div>
+                      <div className="text-3xl">{letter}</div>
+                    </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+                className="flex flex-col items-center m-3"
+                variants={itemVariants}
+            >
+              <div className="flex items-center w-full">
+                <input
+                    type="text"
+                    value={userAnswer}
+                    onChange={handleInputChange}
+                    className="flex-grow text-5xl skew-x-[-12deg] px-3 py-1 border-2 border-gray-400 mr-2"
+                    placeholder="Enter your answer..."
+
+                />
+                <Button
+                    onClick={checkAnswer}
+                    add="skew-x-[-12deg] text-white text-5xl py-1"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                  Check
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        <AnimatePresence>
+          {isModalOpen3 && (
+              <Modal3
+                  open={isModalOpen3}
+                  onClose={() => setModalOpen3(false)}
+              >
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                >
+                  <h1 className="text-3xl mb-6 font-bold">Good Job Warrior You Win!!!!</h1>
+                  <h2 className="text-3xl mb-3 font-bold">Your Score: {finalScore}</h2>
+                  <p className="text-3xl mb-3 font-bold">Time remaining: {timeWhenCompleted} seconds</p>
+                </motion.div>
+              </Modal3>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isModalOpen4 && (
+              <Modal3
+                  onClick={() => { resetGame(); setModalOpen4(false) }}
+                  buttonText={"Again"}
+                  open={isModalOpen4}
+                  onClose={() => setModalOpen4(false)}
+              >
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                >
+                  <h1 className="text-3xl mb-6 font-bold">Try Again!!</h1>
+                </motion.div>
+              </Modal3>
+          )}
+        </AnimatePresence>
+
+        <style jsx global>{`
+          @keyframes fall {
+            to {
+              transform: translateY(100vh) rotate(360deg);
+              opacity: 0;
+            }
+          }
+          .confetti-piece {
+            position: absolute;
+            border-radius: 50%;
+          }
+        `}</style>
       </div>
-    </div>
   );
 };
 

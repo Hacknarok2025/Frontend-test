@@ -1,22 +1,27 @@
-
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/components/own/button";
-
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface ModalProps {
     open: boolean;
     onClose: () => void;
-    children:any;
+    children: any;
+    onClick?: () => void;
+    buttonText?: string; // Dodane jako opcjonalne
 }
 
-const Modal3: React.FC<ModalProps> = ({ open, onClose,children }) => {
-    const navigate = useNavigate(); // Używamy useNavigate zamiast useRouter
+const Modal3: React.FC<ModalProps> = ({ open, onClose, children, onClick, buttonText = "Continue" }) => {
+    const navigate = useNavigate();
 
-    const handleLogin = () => {
-        onClose(); // Zamknij modal
-        navigate('/tree'); // Przekieruj na /tree używając react-router-dom
+    const handleButtonClick = () => {
+        if (onClick) {
+            onClick();
+        } else {
+            onClose();
+            navigate('/tree');
+        }
     };
+
     return (
         <AnimatePresence>
             {open && (
@@ -42,7 +47,7 @@ const Modal3: React.FC<ModalProps> = ({ open, onClose,children }) => {
                             duration: 0.3
                         }}
                     >
-                        <div className=" flex px-4 justify-between items-start mb-6 skew-x-[-12deg]">
+                        <div className="flex px-4 justify-between items-start mb-6 skew-x-[-12deg]">
                             <div className="flex flex-col">
                                 {children}
                             </div>
@@ -53,18 +58,13 @@ const Modal3: React.FC<ModalProps> = ({ open, onClose,children }) => {
                                 ×
                             </button>
                         </div>
-                        <div>
-
-                        </div>
                         <div className="mt-6 flex justify-end skew-x-[-24deg]">
                             <Button
-
-                                onClick={handleLogin}
+                                onClick={handleButtonClick}
                                 add={"px-18 text-4xl hover:bg-white hover:text-black skew-x-[24deg] border-2 border-solid border-black text-white"}
                             >
-                                Continue
+                                {buttonText}
                             </Button>
-
                         </div>
                     </motion.div>
                 </motion.div>

@@ -44,7 +44,7 @@ const Tree = () => {
             level={l}
             top={positions[l].top}
             left={positions[l].left}
-            disabled={l > 9}
+            disabled={l > 11}
           />
         );
       })}
