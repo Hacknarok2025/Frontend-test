@@ -1,17 +1,22 @@
+
+
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    text?: any;
+    size?: string;
+    add?:any
 }
 
-const Button = ({ text}: ButtonProps) => {
+const Button = ({ children, onClick, size,add }: ButtonProps) => {
     return (
         <button
-            className='bg-[#000000] text-6xl text-white px-6 py-3 hover:bg-white hover:text-black transition-all duration-500 transform hover:scale-110 skew-x-12'
+            onClick={onClick}
+            className={`${add} m-5 bg-[#000000] text-${size}  px-6 py-3  transition-all duration-500 transform hover:scale-110 skew-x-12`}
         >
-      <span className="inline-block skew-x-[-12deg]">
-        {text}
-      </span>
+            <span className="inline-block skew-x-[-12deg]">
+                {children}
+            </span>
         </button>
     );
 };
 
 export default Button;
+;
