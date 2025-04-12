@@ -7,13 +7,13 @@ const Home = () => {
             {/* Kontener dla wideo tła */}
             <div className="fixed top-0 left-0 w-full h-full z-[1] overflow-hidden">
                 <iframe
-                    src="https://www.youtube.com/embed/RvQYosp7uuA?autoplay=1&mute=1&loop=1&controls=0&playlist=RvQYosp7uuA&vq=4k"
+                    src="https://www.youtube.com/embed/RvQYosp7uuA?autoplay=1&mute=1&loop=1&controls=0&playlist=RvQYosp7uuA&vq=4kstart=0&start=0&end=40"
                     className="w-full h-full scale-[1.2] "
                     frameBorder="0"
                     allow="autoplay; "
                     allowFullScreen
                 />
-                {/* Nakładka dla lepszej czytelności tekstu */}
+                    {/* Nakładka dla lepszej czytelności tekstu */}
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
             </div>
 
@@ -26,8 +26,8 @@ const Home = () => {
                         vestibulum erat.
                     </p>
                 </div>
-                <div className="self-end">
-                    <Button text={"Rozpocznij rozgrywkę"} />
+                <div className="self-end relative right-20">
+                    <Button text={"Start Game"} />
                 </div>
             </div>
         </>
