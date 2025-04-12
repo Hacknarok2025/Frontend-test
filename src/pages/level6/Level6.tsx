@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from "@/components/own/button.tsx";
+import Modal2 from "@/commons/Modal2.tsx";
+import Modal3 from "@/commons/Modal3.tsx";
 
 type Card = {
     id: number;
@@ -20,7 +22,13 @@ const Level6 = () => {
     ];
     const [gamesPlayed, setGamesPlayed] = useState(0);
     const [darkenBackground, setDarkenBackground] = useState(false);
+    const [isModalOpen3, setModalOpen3] = useState(false);
+    const [cards, setCards] = useState<Card[]>([]);
+    const [flippedCards, setFlippedCards] = useState<number[]>([]);
+    const [moves, setMoves] = useState(0);
+    const [gameStarted, setGameStarted] = useState(false);
 
+    const score =100 - moves * gamesPlayed
     const createShuffledCards = () => {
         const pairedEmojis = [...emojiPairs, ...emojiPairs];
         return pairedEmojis
@@ -33,10 +41,6 @@ const Level6 = () => {
             .sort(() => Math.random() - 0.5);
     };
 
-    const [cards, setCards] = useState<Card[]>([]);
-    const [flippedCards, setFlippedCards] = useState<number[]>([]);
-    const [moves, setMoves] = useState(0);
-    const [gameStarted, setGameStarted] = useState(false);
 
     useEffect(() => {
         const img = new Image();
@@ -111,7 +115,8 @@ const Level6 = () => {
 
     useEffect(() => {
         if (cards.length > 0 && cards.every(card => card.isMatched)) {
-            alert(`Gratulacje! Ukończyłeś grę w ${moves} ruchach!`);
+
+            setModalOpen3(true)
         }
     }, [cards, moves]);
 
@@ -167,6 +172,14 @@ const Level6 = () => {
                     </div>
                 </motion.div>
             </motion.div>
+            <Modal3
+                open={isModalOpen3}
+                onClose={() => setModalOpen3(false)}
+
+            >          <h1 className="text-3xl mb-6 font-bold">Good Job Warrior You Win!!!!</h1>
+                <h2 className="text-3xl mb-3  font-bold">Your Score:{score}</h2>
+                <p className="text-3xl mb-3  font-bold">Moves:{moves}</p>
+                <p className="text-3xl mb-3  font-bold">Games:{gamesPlayed}</p></Modal3>
         </AnimatePresence>
     );
 };
