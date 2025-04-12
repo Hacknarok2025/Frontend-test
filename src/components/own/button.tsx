@@ -6,7 +6,7 @@ const Button = ({ children, onClick, add }: ButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`m-5 bg-[#000000] px-6 py-3 transition-all duration-500 transform hover:scale-110 skew-x-12 ${add}`}
+      className={`${add} m-5 bg-[#000000]  px-6 py-3  transition-all duration-500 transform hover:scale-110 skew-x-12`}
     >
       <span className="inline-block skew-x-[-12deg]">{children}</span>
     </button>
