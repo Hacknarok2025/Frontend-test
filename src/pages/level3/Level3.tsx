@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
 
@@ -32,7 +32,6 @@ const Level3 = () => {
   const [score, setScore] = useState(0);
   const playerImage = useRef<p5Types.Image | null>(null);
   const collectibleImage = useRef<p5Types.Image | null>(null);
-  const obstacleImage = useRef<p5Types.Image | null>(null);
   
   // Setup grid with obstacles and collectibles
   const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -210,7 +209,7 @@ const Level3 = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-blue-900">
       <h1 className="text-4xl font-bold text-white mb-4">Jotunheim - Ice Slide</h1>
       <div className="mb-4 text-white text-xl">Mjolnir Pieces: {score}/{collectibles.length}</div>
-      <Sketch setup={setup} draw={draw} keyPressed={keyPressed} />
+      <Sketch setup={setup as any} draw={draw as any} keyPressed={keyPressed as any} />
       <div className="mt-4 text-white text-lg">
         Use arrow keys or WASD to slide across the ice. Collect all the Mjolnir pieces!
       </div>
