@@ -6,12 +6,13 @@ const Home = () => {
       {/* Kontener dla wideo tła */}
       <div className="fixed top-0 left-0 w-full h-full z-[1] overflow-hidden">
         <iframe
-          src="https://www.youtube.com/embed/RvQYosp7uuA?autoplay=1&mute=1&loop=1&controls=0&playlist=RvQYosp7uuA&vq=4kstart=0&start=0&end=40"
+          src="https://drive.google.com/file/d/15P767cq4ocFhbRLcmiyypWF5B1WSQ0fq/preview?autoplay=1&loop=1&mute=1"
           className="w-full h-full scale-[1.2] "
           frameBorder="0"
-          allow="autoplay; "
+          allow="autoplay"
           allowFullScreen
         />
+
         {/* Nakładka dla lepszej czytelności tekstu */}
         <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
       </div>
