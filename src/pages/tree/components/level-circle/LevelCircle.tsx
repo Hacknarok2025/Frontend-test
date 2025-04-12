@@ -4,6 +4,18 @@ type LevelCircleProps = {
   left: string;
   disabled?: boolean;
 };
+const levelNames = {
+  1: "Nilfheim",
+  2: "Helheim",
+  3: "Jotunheim",
+  4: "Nidavell",
+  5: "Vanahei",
+  6: "Midgard",
+  7: "Muspelheim",
+  8: "Alfheim",
+  9: "Asgard"
+};
+
 
 const LevelCircle = ({
   level,
@@ -11,7 +23,7 @@ const LevelCircle = ({
   left,
   disabled = false,
 }: LevelCircleProps) => {
-  level = 1;
+  // level = 1;
 
   const containerClass = `absolute flex flex-col items-center transition-all duration-500 transform ${
     disabled ? 'opacity-70' : 'hover:scale-110 group'
@@ -31,7 +43,7 @@ const LevelCircle = ({
     <div style={{ top, left }} className={containerClass}>
       <div className={imageContainerClass}>
         <img
-          src={`/imgs/level${level}.png`}
+          src={`/imgs/level${level}.webp`}
           alt={`Level ${level}`}
           className="w-full h-full object-cover opacity-100"
           style={disabled ? { opacity: 0.5 } : {}}
@@ -41,7 +53,7 @@ const LevelCircle = ({
         />
       </div>
 
-      <div className={labelClass}>Level {level}</div>
+      <div className={labelClass}>  {levelNames[level as keyof typeof levelNames] || `Level ${level}`}</div>
     </div>
   );
 };
