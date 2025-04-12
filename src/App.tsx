@@ -2,16 +2,14 @@ import { Route, Routes } from 'react-router-dom';
 import Home from './pages/home/Home';
 import Tree from './pages/tree/Tree';
 import Level1 from './pages/level1/Level1';
-import Level5 from './pages/level5/Level5';
-import Level6 from './pages/level6/Level6';
-import Level7 from './pages/level7/Level7';
+import Level4 from '@/pages/level4/Level4.tsx';
+import Level5 from '@/pages/level5/Level5.tsx';
+import Level6 from '@/pages/level6/Level6.tsx';
+import Level7 from '@/pages/level7/Level7.tsx';
+import Level9 from '@/pages/level9/Level9.tsx';
+import Level2 from './pages/level2/Level2';
 import Level8 from './pages/level8/Level8';
-import Level9 from './pages/level9/Level9';
-import Level4 from './pages/level4/Level4';
 
-function Level2() {
-  return null;
-}
 function Level3() {
   return null;
 }

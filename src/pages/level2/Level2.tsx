@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
 
@@ -15,6 +15,8 @@ interface Player {
 const Level2 = () => {
   const playerImage = useRef<p5Types.Image | null>(null);
   const hammerImage = useRef<p5Types.Image | null>(null);
+  const p5Instance = useRef<p5Types | null>(null);
+  const canvasParentRef = useRef<Element | null>(null);
 
   const generateMaze = () => {
     const maze = Array(ROWS)
@@ -63,20 +65,52 @@ const Level2 = () => {
     return maze;
   };
 
-  const maze = useRef(generateMaze()).current;
+  // Reset function to reinitialize the game state
+  const resetGame = useCallback(() => {
+    const maze = generateMaze();
+    return {
+      maze,
+      player: {
+        x: CELL_SIZE + CELL_SIZE / 2,
+        y: CELL_SIZE + CELL_SIZE / 2,
+      },
+    };
+  }, []);
 
-  const player = useRef<Player>({
-    x: CELL_SIZE + CELL_SIZE / 2,
-    y: CELL_SIZE + CELL_SIZE / 2,
-  }).current;
+  const gameState = useRef(resetGame());
 
-  let canvasInitialized = false;
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    if (canvasInitialized) return;
-    p5.createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE).parent(canvasParentRef);
+  // Clean up function
+  useEffect(() => {
+    return () => {
+      if (p5Instance.current) {
+        // Remove any existing canvases from the parent
+        if (canvasParentRef.current) {
+          const existingCanvases =
+            canvasParentRef.current.getElementsByTagName('canvas');
+          for (let i = existingCanvases.length - 1; i >= 0; i--) {
+            existingCanvases[i].remove();
+          }
+        }
+        p5Instance.current.remove();
+        p5Instance.current = null;
+      }
+    };
+  }, []);
+
+  const setup = (p5: p5Types, parentRef: Element) => {
+    // Store the parent ref for cleanup
+    canvasParentRef.current = parentRef;
+
+    // Remove any existing canvases before creating a new one
+    const existingCanvases = parentRef.getElementsByTagName('canvas');
+    for (let i = existingCanvases.length - 1; i >= 0; i--) {
+      existingCanvases[i].remove();
+    }
+
+    p5Instance.current = p5;
+    p5.createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE).parent(parentRef);
     playerImage.current = p5.loadImage('/imgs/viking-pixel.png');
     hammerImage.current = p5.loadImage('/imgs/hammer.png');
-    canvasInitialized = true;
   };
 
   const draw = (p5: p5Types) => {
@@ -101,8 +135,8 @@ const Level2 = () => {
 
         // Calculate distance from player to cell center
         const d = p5.dist(
-          player.x,
-          player.y,
+          gameState.current.player.x,
+          gameState.current.player.y,
           cellX + CELL_SIZE / 2,
           cellY + CELL_SIZE / 2
         );
@@ -128,7 +162,7 @@ const Level2 = () => {
             continue;
           } else {
             p5.fill(
-              maze[y][x]
+              gameState.current.maze[y][x]
                 ? p5.color(0, 0, 200, brightness)
                 : p5.color(200, 200, 200, brightness)
             );
@@ -148,8 +182,8 @@ const Level2 = () => {
       const imageSize = CELL_SIZE * 0.8; // Nieco mniejszy niż komórka
       p5.image(
         playerImage.current,
-        player.x - imageSize / 2,
-        player.y - imageSize / 2,
+        gameState.current.player.x - imageSize / 2,
+        gameState.current.player.y - imageSize / 2,
         imageSize,
         imageSize
       );
@@ -157,8 +191,8 @@ const Level2 = () => {
   };
 
   const checkWinCondition = () => {
-    const playerGridX = Math.floor(player.x / CELL_SIZE);
-    const playerGridY = Math.floor(player.y / CELL_SIZE);
+    const playerGridX = Math.floor(gameState.current.player.x / CELL_SIZE);
+    const playerGridY = Math.floor(gameState.current.player.y / CELL_SIZE);
 
     if (playerGridX === COLS - 3 && playerGridY === ROWS - 3) {
       console.log('Congratulations! You reached the goal!');
@@ -167,8 +201,8 @@ const Level2 = () => {
 
   const keyPressed = useCallback((p5: p5Types) => {
     const speed = CELL_SIZE / 2;
-    let newX = player.x;
-    let newY = player.y;
+    let newX = gameState.current.player.x;
+    let newY = gameState.current.player.y;
 
     switch (p5.key.toLowerCase()) {
       case 'w':
@@ -198,7 +232,7 @@ const Level2 = () => {
         cellX < COLS &&
         cellY >= 0 &&
         cellY < ROWS &&
-        !maze[cellY][cellX]
+        !gameState.current.maze[cellY][cellX]
       );
     };
 
@@ -211,8 +245,8 @@ const Level2 = () => {
       checkCollision(newX + radius, newY + radius); // Bottom-right
 
     if (canMove) {
-      player.x = newX;
-      player.y = newY;
+      gameState.current.player.x = newX;
+      gameState.current.player.y = newY;
       checkWinCondition();
     }
   }, []); // No dependencies needed as we're using refs
@@ -220,9 +254,9 @@ const Level2 = () => {
   return (
     <div className="fixed inset-0 overflow-hidden bg-black">
       <div className="absolute inset-0">
-        <img src="/imgs/tree-bg.png" className="object-cover w-full h-full" />
+        <img src="/imgs/level2.webp" className="object-cover w-full h-full" />
       </div>
-      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+      <div className="absolute inset-0 flex items-center justify-center ">
         <Sketch
           setup={setup as any}
           draw={draw as any}
