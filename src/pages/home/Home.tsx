@@ -1,3 +1,4 @@
+
 import Button from "@/components/own/button";
 import Modal1 from "@/commons/Modal1.tsx";
 import { useState } from "react";
@@ -61,6 +62,8 @@ const Home = () => {
             />
         </>
     );
+
+
 };
 
 export default Home;

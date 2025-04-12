@@ -1,6 +1,5 @@
-
-
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+
 
     add?:any
 }
@@ -16,7 +15,8 @@ const Button = ({ children, onClick, add }: ButtonProps) => {
             </span>
         </button>
     );
-};
+
+
+}
 
 export default Button;
-;
