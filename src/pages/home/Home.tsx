@@ -7,7 +7,7 @@ const Home = () => {
             {/* Kontener dla wideo tła */}
             <div className="fixed top-0 left-0 w-full h-full z-[1] overflow-hidden">
                 <iframe
-                    src="https://www.youtube.com/embed/RvQYosp7uuA?autoplay=1&mute=1&loop=1&controls=0&playlist=RvQYosp7uuA&vq=4kstart=0&start=0&end=40"
+                    src="https://www.youtube.com/embed/RvQYosp7uuA?autoplay=1&mute=1&loop=1&controls=0&playlist=RvQYosp7uuA&vq=4kstart=0&send=40"
                     className="w-full h-full scale-[1.2] "
                     frameBorder="0"
                     allow="autoplay; "
