@@ -1,6 +1,7 @@
 import Button from "@/components/own/button";
 
 const Home = () => {
+
     return (
         <>
             {/* Kontener dla wideo tła */}
