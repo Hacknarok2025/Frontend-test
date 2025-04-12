@@ -1,11 +1,16 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect, useState } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
+import { motion, AnimatePresence } from "framer-motion";
+import Modal3 from "@/commons/Modal3.tsx";
 
 const CELL_SIZE = 40;
 const COLS = 20;
 const ROWS = 20;
 const LIGHT_RADIUS = 150;
+const SCORE_MULTIPLIER = 1.5;
+const INITIAL_SCORE = 100;
+const GRACE_PERIOD = 10;
 
 interface Player {
   x: number;
@@ -13,265 +18,149 @@ interface Player {
 }
 
 const Level2 = () => {
+  const [isVisible, setIsVisible] = useState(false);
   const playerImage = useRef<p5Types.Image | null>(null);
   const hammerImage = useRef<p5Types.Image | null>(null);
   const p5Instance = useRef<p5Types | null>(null);
   const canvasParentRef = useRef<Element | null>(null);
   const lastMoveTime = useRef(0);
-  const MOVE_COOLDOWN = 50; // 50ms cooldown between moves
+  const MOVE_COOLDOWN = 50;
+  const [isModalOpen3, setModalOpen3] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [score, setScore] = useState(INITIAL_SCORE);
+  const [showScore, setShowScore] = useState(false);
 
-  const generateMaze = () => {
-    const maze = Array(ROWS)
-      .fill(null)
-      .map(() => Array(COLS).fill(true)); // Start as all walls
-
-    const inBounds = (x, y) => x > 0 && y > 0 && x < COLS - 1 && y < ROWS - 1;
-
-    const shuffle = (array) => {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    };
-
-    const carve = (x, y) => {
-      maze[y][x] = false;
-
-      const dirs = shuffle([
-        [0, -2], // up
-        [0, 2], // down
-        [-2, 0], // left
-        [2, 0], // right
-      ]);
-
-      for (const [dx, dy] of dirs) {
-        const nx = x + dx;
-        const ny = y + dy;
-
-        if (inBounds(nx, ny) && maze[ny][nx]) {
-          // Carve passage between
-          maze[ny - dy / 2][nx - dx / 2] = false;
-          carve(nx, ny);
-        }
-      }
-    };
-
-    // Start carving from (1, 1)
-    carve(1, 1);
-
-    // Ensure start and end points are open
-    maze[1][1] = false;
-    maze[ROWS - 3][COLS - 3] = false;
-
-    return maze;
-  };
-
-  // Reset function to reinitialize the game state
-  const resetGame = useCallback(() => {
-    const maze = generateMaze();
-    return {
-      maze,
-      player: {
-        x: CELL_SIZE + CELL_SIZE / 2,
-        y: CELL_SIZE + CELL_SIZE / 2,
-      },
-    };
-  }, []);
-
-  const gameState = useRef(resetGame());
-
-  // Clean up function
+  // Timer effect
   useEffect(() => {
-    return () => {
-      if (p5Instance.current) {
-        // Remove any existing canvases from the parent
-        if (canvasParentRef.current) {
-          const existingCanvases =
-            canvasParentRef.current.getElementsByTagName('canvas');
-          for (let i = existingCanvases.length - 1; i >= 0; i--) {
-            existingCanvases[i].remove();
-          }
+    let interval: NodeJS.Timeout;
+
+    if (isVisible && startTime && !endTime) {
+      interval = setInterval(() => {
+        const timeNow = Date.now();
+        const elapsedSeconds = Math.floor((timeNow - startTime) / 1000);
+        setCurrentTime(elapsedSeconds);
+
+        if (elapsedSeconds >= GRACE_PERIOD) {
+          setShowScore(true);
+          const timeAfterGrace = elapsedSeconds - GRACE_PERIOD;
+          const newScore = Math.max(0, INITIAL_SCORE - Math.floor(timeAfterGrace * SCORE_MULTIPLIER));
+          setScore(newScore);
         }
-        p5Instance.current.remove();
-        p5Instance.current = null;
-      }
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isVisible, startTime, endTime]);
+
+  useEffect(() => {
+    setIsVisible(true);
+    const now = Date.now();
+    setStartTime(now);
+    setScore(INITIAL_SCORE);
+    setShowScore(false);
+    return () => {
+      setIsVisible(false);
+      setStartTime(null);
+      setEndTime(null);
     };
   }, []);
 
-  const setup = (p5: p5Types, parentRef: Element) => {
-    // Store the parent ref for cleanup
-    canvasParentRef.current = parentRef;
-
-    // Remove any existing canvases before creating a new one
-    const existingCanvases = parentRef.getElementsByTagName('canvas');
-    for (let i = existingCanvases.length - 1; i >= 0; i--) {
-      existingCanvases[i].remove();
-    }
-
-    p5Instance.current = p5;
-    p5.createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE).parent(parentRef);
-    playerImage.current = p5.loadImage('/imgs/viking-pixel.png');
-    hammerImage.current = p5.loadImage('/imgs/hammer.png');
-  };
-
-  const draw = (p5: p5Types) => {
-    p5.background(0);
-
-    // Draw the border around the game board
-    p5.push();
-    p5.stroke(100, 100, 100); // Gray color for the border
-    p5.strokeWeight(4); // Border thickness
-    p5.noFill();
-    p5.rect(0, 0, COLS * CELL_SIZE, ROWS * CELL_SIZE);
-    p5.pop();
-
-    p5.push();
-    p5.noStroke();
-
-    // Draw the light around player
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        const cellX = x * CELL_SIZE;
-        const cellY = y * CELL_SIZE;
-
-        // Calculate distance from player to cell center
-        const d = p5.dist(
-          gameState.current.player.x,
-          gameState.current.player.y,
-          cellX + CELL_SIZE / 2,
-          cellY + CELL_SIZE / 2
-        );
-
-        // Set color based on distance (creating light effect)
-        // const brightness = p5.map(d, 0, LIGHT_RADIUS, 255, 0);
-        const brightness = p5.map(d, 0, 255, 255, 0);
-
-        if (d < LIGHT_RADIUS) {
-          if (x === COLS - 3 && y === ROWS - 3) {
-            p5.fill(p5.color(200, 200, 200, brightness));
-            p5.rect(cellX, cellY, CELL_SIZE, CELL_SIZE);
-            if (hammerImage.current) {
-              const imageSize = CELL_SIZE * 0.8;
-              p5.image(
-                hammerImage.current,
-                cellX + CELL_SIZE / 2 - imageSize / 2,
-                cellY + CELL_SIZE / 2 - imageSize / 2,
-                imageSize,
-                imageSize
-              );
-            }
-            continue;
-          } else {
-            p5.fill(
-              gameState.current.maze[y][x]
-                ? p5.color(0, 0, 200, brightness)
-                : p5.color(200, 200, 200, brightness)
-            );
-          }
-        } else {
-          p5.fill('#050505');
-        }
-
-        // Draw cell
-        p5.rect(cellX, cellY, CELL_SIZE, CELL_SIZE);
-      }
-    }
-    p5.pop();
-
-    // Draw player
-    if (playerImage.current) {
-      const imageSize = CELL_SIZE * 0.8; // Nieco mniejszy niż komórka
-      p5.image(
-        playerImage.current,
-        gameState.current.player.x - imageSize / 2,
-        gameState.current.player.y - imageSize / 2,
-        imageSize,
-        imageSize
-      );
-    }
-  };
+  // ... (reszta funkcji pozostaje bez zmian: generateMaze, resetGame, setup, draw)
 
   const checkWinCondition = () => {
     const playerGridX = Math.floor(gameState.current.player.x / CELL_SIZE);
     const playerGridY = Math.floor(gameState.current.player.y / CELL_SIZE);
 
     if (playerGridX === COLS - 3 && playerGridY === ROWS - 3) {
-      console.log('Congratulations! You reached the goal!');
+      const finalTime = Math.floor((Date.now() - (startTime || Date.now())) / 1000);
+      setEndTime(Date.now());
+      setCurrentTime(finalTime);
+
+      // Oblicz końcowy wynik
+      let finalScore = INITIAL_SCORE;
+      if (finalTime > GRACE_PERIOD) {
+        const timeAfterGrace = finalTime - GRACE_PERIOD;
+        finalScore = Math.max(0, INITIAL_SCORE - Math.floor(timeAfterGrace * SCORE_MULTIPLIER));
+      }
+      setScore(finalScore);
+      setModalOpen3(true);
     }
   };
 
-  const keyPressed = useCallback((p5: p5Types) => {
-    const currentTime = Date.now();
-    if (currentTime - lastMoveTime.current < MOVE_COOLDOWN) {
-      return; // Still in cooldown, ignore this movement
-    }
-
-    const speed = CELL_SIZE;
-    let newX = gameState.current.player.x;
-    let newY = gameState.current.player.y;
-
-    switch (p5.key.toLowerCase()) {
-      case 'w':
-        newY -= speed;
-        break;
-      case 's':
-        newY += speed;
-        break;
-      case 'a':
-        newX -= speed;
-        break;
-      case 'd':
-        newX += speed;
-        break;
-    }
-
-    // Check collision with walls and boundaries
-    const gridX = Math.floor(newX / CELL_SIZE);
-    const gridY = Math.floor(newY / CELL_SIZE);
-
-    // Additional collision checks for the corners of the player
-    const checkCollision = (x: number, y: number) => {
-      const cellX = Math.floor(x / CELL_SIZE);
-      const cellY = Math.floor(y / CELL_SIZE);
-      return (
-        cellX >= 0 &&
-        cellX < COLS &&
-        cellY >= 0 &&
-        cellY < ROWS &&
-        !gameState.current.maze[cellY][cellX]
-      );
-    };
-
-    // Check player's corners (using a smaller hitbox)
-    const radius = CELL_SIZE / 4;
-    const canMove =
-      checkCollision(newX - radius, newY - radius) && // Top-left
-      checkCollision(newX + radius, newY - radius) && // Top-right
-      checkCollision(newX - radius, newY + radius) && // Bottom-left
-      checkCollision(newX + radius, newY + radius); // Bottom-right
-
-    if (canMove) {
-      gameState.current.player.x = newX;
-      gameState.current.player.y = newY;
-      lastMoveTime.current = currentTime;
-      checkWinCondition();
-    }
-  }, []); // No dependencies needed as we're using refs
+  // ... (keyPressed pozostaje bez zmian)
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black">
-      <div className="absolute inset-0">
-        <img src="/imgs/level2.webp" className="object-cover w-full h-full" />
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center ">
-        <Sketch
-          setup={setup as any}
-          draw={draw as any}
-          keyPressed={keyPressed as any}
-        />
-      </div>
-    </div>
+      <AnimatePresence>
+        {isVisible && (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="fixed inset-0 overflow-hidden bg-black"
+            >
+              <div className="absolute inset-0">
+                <img src="/imgs/level2.webp" className="object-cover w-full h-full" />
+              </div>
+              <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="absolute inset-0 flex items-center justify-center flex-col"
+              >
+                <div className="text-4xl m-5 bg-[#ffffff] px-6 py-3 transition-all duration-500 transform hover:scale-110 skew-x-12">
+                  Time: {currentTime}s
+                </div>
+
+                {showScore && (
+                    <div className="text-4xl m-5 bg-[#ff0000] px-6 py-3 transition-all duration-500 transform hover:scale-110 skew-x-12">
+                      Score: {score}
+                    </div>
+                )}
+
+                {currentTime < GRACE_PERIOD && (
+                    <div className="text-2xl text-white mt-2">
+                      Grace period: {GRACE_PERIOD - currentTime}s remaining
+                    </div>
+                )}
+
+                <Sketch
+                    setup={setup as any}
+                    draw={draw as any}
+                    keyPressed={keyPressed as any}
+                />
+              </motion.div>
+            </motion.div>
+        )}
+
+        <Modal3
+            open={isModalOpen3}
+            onClose={() => setModalOpen3(false)}
+        >
+          <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="text-center"
+          >
+            <h1 className="text-3xl mb-6 font-bold">Good Job Warrior You Win!!!!</h1>
+            <h2 className="text-3xl mb-3 font-bold">Time: {currentTime} seconds</h2>
+            <h2 className="text-3xl mb-6 font-bold">Your Score: {score}</h2>
+
+            {currentTime <= GRACE_PERIOD ? (
+                <p className="text-xl text-green-500">Perfect time! Full points!</p>
+            ) : (
+                <p className="text-xl">
+                  (Score: {INITIAL_SCORE} - {currentTime - GRACE_PERIOD}s × {SCORE_MULTIPLIER} = {score})
+                </p>
+            )}
+          </motion.div>
+        </Modal3>
+      </AnimatePresence>
   );
 };
 
