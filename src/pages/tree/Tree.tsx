@@ -1,4 +1,3 @@
-import React from 'react';
 import LevelCircle from './components/level-circle/LevelCircle';
 
 const Tree = () => {
