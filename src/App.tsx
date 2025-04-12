@@ -6,7 +6,8 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Tree />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/tree" element={<Tree />} />
       </Routes>
     </div>
   );

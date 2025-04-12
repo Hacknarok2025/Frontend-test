@@ -8,10 +8,10 @@ const Tree = () => {
       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((l) => {
         // Przykładowe współrzędne dla poziomów
         const positions: Record<number, { top: string; left: string }> = {
-          1: { top: '85%', left: '49%' },
-          2: { top: '78%', left: '37%' },
-          3: { top: '71%', left: '50%' },
-          4: { top: '63%', left: '42%' },
+          1: { top: '88%', left: '49%' },
+          2: { top: '80%', left: '37%' },
+          3: { top: '75%', left: '50%' },
+          4: { top: '65%', left: '42%' },
           5: { top: '55%', left: '48%' },
           6: { top: '45%', left: '44%' },
           7: { top: '33%', left: '47%' },

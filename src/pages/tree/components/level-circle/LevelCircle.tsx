@@ -11,15 +11,19 @@ const LevelCircle = ({ level, top, left }: LevelCircleProps) => {
   return (
     <div
       style={{ top, left }}
-      className="absolute size-32 sm:size-28 rounded-full overflow-hidden border-4 border-white shadow-md
-                   bg-gradient-to-br from-gray-200 to-white
-                   transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-[0_0_20px_rgba(0,0,0,0.2)] animate-fade-in"
+      className="absolute flex flex-col items-center  transition-all duration-500 transform hover:scale-110 group"
     >
-      <img
-        src={`/imgs/level${level}.png`}
-        alt={`Level ${level}`}
-        className="w-full h-full object-cover"
-      />
+      <div className="w-30 h-15 bg-black text-6xl p-1 text-white skew-x-12 group-hover:bg-white transition-all duration-500 transform">
+        <img
+          src={`/imgs/level${level}.png`}
+          alt={`Level ${level}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="flex justify-center w-60 h-10 bg-black text-lg p-1 text-white font-bold skew-x-12 text-center items-center group-hover:bg-white transition-all duration-500 transform group-hover:text-black">
+        Level {level}
+      </div>
     </div>
   );
 };
