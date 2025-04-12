@@ -167,7 +167,7 @@ const Level4 = () => {
         backgroundPosition: 'center',
       }}
     >
-      <div className="absolute top-4 left-4 bg-black/80 text-white p-4 rounded-lg z-10">
+      <div className="flex flex-col items-start  m-5 bg-[#000000] text-white  px-6 py-3  skew-x-12">
         <h2 className="text-4xl mb-2 norse">Catch Mjölnir</h2>
         <p className="text-2xl norse">Score: {score}</p>
         <p className="text-2xl norse">Misses: {misses}</p>
