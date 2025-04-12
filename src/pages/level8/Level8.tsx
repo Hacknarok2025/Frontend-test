@@ -10,67 +10,69 @@ interface Question {
   explanation: string;
 }
 
-const Level8 = () => {
-  // Norse mythology quiz questions
-  const questions: Question[] = [
-    {
-      id: 1,
-      question: "Kto jest głównym bogiem w mitologii nordyckiej?",
-      answers: ["Thor", "Loki", "Odyn", "Baldur"],
-      correctAnswer: 2,
-      explanation: "Odyn jest najwyższym bogiem w mitologii nordyckiej, nazywany Wszechojcem."
-    },
-    {
-      id: 2,
-      question: "Jak nazywa się wielki jesion, który łączy dziewięć światów w mitologii nordyckiej?",
-      answers: ["Mjolnir", "Bifrost", "Yggdrasil", "Valhalla"],
-      correctAnswer: 2,
-      explanation: "Yggdrasil to ogromny jesion, który łączy dziewięć światów w kosmologii nordyckiej."
-    },
-    {
-      id: 3,
-      question: "Kto jest bogiem piorunów w mitologii nordyckiej?",
-      answers: ["Thor", "Loki", "Baldur", "Freja"],
-      correctAnswer: 0,
-      explanation: "Thor jest bogiem piorunów, posługuje się młotem Mjolnirem."
-    },
-    {
-      id: 4,
-      question: "Co to jest Ragnarök?",
-      answers: ["Święto plonów", "Nordycka uczta", "Koniec świata", "Miejsce spotkań bogów"],
-      correctAnswer: 2,
-      explanation: "Ragnarök to w mitologii nordyckiej seria wydarzeń, które prowadzą do końca świata."
-    },
-    {
-      id: 5,
-      question: "Jak nazywa się kraina zmarłych rządzona przez boginię Hel?",
-      answers: ["Asgard", "Niflheim", "Valhalla", "Helheim"],
-      correctAnswer: 3,
-      explanation: "Helheim to kraina zmarłych rządzona przez boginię Hel, córkę Lokiego."
-    },
-    {
-      id: 6,
-      question: "Które stworzenie owija się wokół Midgardu (Ziemi)?",
-      answers: ["Fenrir", "Jormungandr", "Sleipnir", "Hugin"],
-      correctAnswer: 1,
-      explanation: "Jormungandr, znany również jako Wąż Midgardu, to olbrzymi wąż oplatający Ziemię."
-    },
-    {
-      id: 7,
-      question: "Które zwierzęta towarzyszą Odynowi?",
-      answers: ["Dwa kruki i dwa wilki", "Dwa kruki i dwa konie", "Dwa wilki i dwa orły", "Dwa orły i dwa lwy"],
-      correctAnswer: 0,
-      explanation: "Odynowi towarzyszą dwa kruki - Hugin i Munin oraz dwa wilki - Geri i Freki."
-    },
-    {
-      id: 8,
-      question: "Kto jest ojcem Lokiego?",
-      answers: ["Odyn", "Thor", "Farbauti", "Bor"],
-      correctAnswer: 2,
-      explanation: "Loki jest synem olbrzyma Farbautiego i olbrzymki Laufey."
-    }
-  ];
+// Question pool - moved outside the component
+const questionPool: Question[] = [
+  {
+    id: 1,
+    question: "Who is the chief god in Norse mythology?",
+    answers: ["Thor", "Loki", "Odin", "Baldur"],
+    correctAnswer: 2,
+    explanation: "Odin is the highest god in Norse mythology, called the All-Father."
+  },
+  {
+    id: 2,
+    question: "What is the name of the great ash tree that connects the nine worlds in Norse mythology?",
+    answers: ["Mjolnir", "Bifrost", "Yggdrasil", "Valhalla"],
+    correctAnswer: 2,
+    explanation: "Yggdrasil is the enormous ash tree that connects the nine worlds in Norse cosmology."
+  },
+  {
+    id: 3,
+    question: "Who is the god of thunder in Norse mythology?",
+    answers: ["Thor", "Loki", "Baldur", "Freya"],
+    correctAnswer: 0,
+    explanation: "Thor is the god of thunder, who wields the hammer Mjolnir."
+  },
+  {
+    id: 4,
+    question: "What is Ragnarok?",
+    answers: ["Harvest festival", "Norse feast", "End of the world", "Meeting place of gods"],
+    correctAnswer: 2,
+    explanation: "Ragnarok in Norse mythology is a series of events that lead to the end of the world."
+  },
+  {
+    id: 5,
+    question: "What is the name of the realm of the dead ruled by goddess Hel?",
+    answers: ["Asgard", "Niflheim", "Valhalla", "Helheim"],
+    correctAnswer: 3,
+    explanation: "Helheim is the realm of the dead ruled by the goddess Hel, daughter of Loki."
+  },
+  {
+    id: 6,
+    question: "Which creature wraps around Midgard (Earth)?",
+    answers: ["Fenrir", "Jormungandr", "Sleipnir", "Hugin"],
+    correctAnswer: 1,
+    explanation: "Jormungandr, also known as the Midgard Serpent, is the giant serpent that encircles Earth."
+  },
+  {
+    id: 7,
+    question: "Which animals accompany Odin?",
+    answers: ["Two ravens and two wolves", "Two ravens and two horses", "Two wolves and two eagles", "Two eagles and two lions"],
+    correctAnswer: 0,
+    explanation: "Odin is accompanied by two ravens - Hugin and Munin, and two wolves - Geri and Freki."
+  },
+  {
+    id: 8,
+    question: "Who is Loki's father?",
+    answers: ["Odin", "Thor", "Farbauti", "Bor"],
+    correctAnswer: 2,
+    explanation: "Loki is the son of the giant Farbauti and the giantess Laufey."
+  }
+];
 
+const Level8 = () => {
+  // State for randomly selected questions
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -80,9 +82,17 @@ const Level8 = () => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [showFinalScore, setShowFinalScore] = useState(false);
 
+  // Select random questions on component mount
+  useEffect(() => {
+    // Shuffle and pick 5 random questions
+    const shuffledQuestions = [...questionPool].sort(() => 0.5 - Math.random());
+    const selectedQuestions = shuffledQuestions.slice(0, 5);
+    setQuestions(selectedQuestions);
+  }, []);
+
   // Reset timer when moving to a new question
   useEffect(() => {
-    if (quizCompleted || showExplanation || showFinalScore) return;
+    if (quizCompleted || showExplanation || showFinalScore || questions.length === 0) return;
     
     const countdown = setInterval(() => {
       setTimer((prevTimer) => {
@@ -96,7 +106,7 @@ const Level8 = () => {
     }, 1000);
 
     return () => clearInterval(countdown);
-  }, [currentQuestionIndex, quizCompleted, showExplanation]);
+  }, [currentQuestionIndex, quizCompleted, showExplanation, questions]);
 
   const handleAnswer = (answerIndex: number) => {
     const currentQuestion = questions[currentQuestionIndex];
@@ -126,6 +136,11 @@ const Level8 = () => {
   };
 
   const restartQuiz = () => {
+    // Shuffle and pick new random questions
+    const shuffledQuestions = [...questionPool].sort(() => 0.5 - Math.random());
+    const selectedQuestions = shuffledQuestions.slice(0, 5);
+    setQuestions(selectedQuestions);
+    
     setCurrentQuestionIndex(0);
     setScore(0);
     setSelectedAnswer(null);
@@ -136,46 +151,54 @@ const Level8 = () => {
     setShowFinalScore(false);
   };
 
+  // Check if questions are loaded
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#18181b] text-white flex flex-col items-center justify-center">
+        <p className="text-xl norse">Loading quiz...</p>
+      </div>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-[#18181b] text-white flex flex-col items-center justify-center py-10 px-4 md:px-0 relative">
+    <div className="min-h-screen bg-[#18181b] text-white flex flex-col items-center justify-center py-8 px-4 md:px-0 relative">
       <div 
         className="fixed top-0 left-0 w-full h-full z-0 bg-cover bg-center opacity-20"
         style={{ backgroundImage: "url('/imgs/tree-bg.png')" }}
       ></div>
       
       <div className="relative z-10 w-full max-w-3xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-6xl font-bold mb-4" style={{ fontFamily: 'NorseBold, sans-serif' }}>
-            Mitologia Nordycka
+        <div className="mb-6 text-center">
+          <h1 className="text-5xl font-bold mb-2 norse">
+            Norse Mythology
           </h1>
-          <p className="text-xl">Poziom 8: Quiz o mitologii nordyckiej</p>
+          <p className="text-lg norse">Level 8: Norse Mythology Quiz</p>
         </div>
 
         {!quizCompleted ? (
-          <div className="bg-[#27272a] p-8 rounded-lg shadow-xl border border-[#3f3f46]">
-            <div className="flex justify-between mb-6">
-              <span className="text-lg">Pytanie {currentQuestionIndex + 1}/{questions.length}</span>
-              <span className="text-lg">Wynik: {score}/{questions.length}</span>
+          <div className="bg-[#27272a] p-6 rounded-lg shadow-xl border border-[#3f3f46]">
+            <div className="flex justify-between mb-3">
+              <span className="text-lg norse">Question {currentQuestionIndex + 1}/{questions.length}</span>
+              <span className="text-lg norse">Score: {score}/{questions.length}</span>
             </div>
             
-            <div className="mb-4 w-full bg-[#3f3f46] h-2 rounded-full">
+            <div className="mb-3 w-full bg-[#3f3f46] h-2 rounded-full">
               <div 
                 className="h-2 bg-blue-500 rounded-full transition-all duration-200"
                 style={{ width: `${(timer / 30) * 100}%`, backgroundColor: timer < 10 ? '#ef4444' : '#3b82f6' }}
               ></div>
             </div>
             
-            <h2 className="text-2xl font-bold mb-6">{currentQuestion.question}</h2>
-            
-            <div className="space-y-4 mb-6">
+            <h2 className="text-2xl font-bold mb-4 norse">{currentQuestion.question}</h2>
+            <div className="space-y-2 mb-3">
               {currentQuestion.answers.map((answer, index) => (
                 <button
                   key={index}
                   onClick={() => !showResult && handleAnswer(index)}
                   disabled={showResult}
-                  className={`w-full p-4 text-left rounded-lg transition-all duration-300 transform hover:scale-[1.01] border-2 ${
+                  className={`w-full p-3 text-left rounded-lg transition-all duration-300 transform hover:scale-[1.01] border norse text-lg ${
                     selectedAnswer === index
                       ? index === currentQuestion.correctAnswer
                         ? "border-green-500 bg-green-500/20"
@@ -185,49 +208,52 @@ const Level8 = () => {
                       : "border-[#3f3f46] bg-[#3f3f46]/40 hover:bg-[#3f3f46]"
                   }`}
                 >
-                  <span className="font-bold mr-2">{String.fromCharCode(65 + index)}.</span> {answer}
+                  <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span> {answer}
                 </button>
               ))}
             </div>
             
-            {showExplanation && (
-              <div className="mb-6 p-4 bg-[#3f3f46]/50 rounded-lg">
-                <h3 className="font-bold mb-2">Wyjaśnienie:</h3>
-                <p>{currentQuestion.explanation}</p>
-              </div>
-            )}
+            <div className={`transition-all duration-300 overflow-hidden ${showExplanation ? 'max-h-28' : 'max-h-0'}`}>
+              {showExplanation && (
+                <div className="mb-2 p-2 bg-[#3f3f46]/50 rounded-lg">
+                  <p className="norse text-base"><span className="font-bold">Explanation:</span> {currentQuestion.explanation}</p>
+                </div>
+              )}
+            </div>
             
-            {showResult && (
-              <div className="flex justify-center">
-                <Button 
-                  onClick={handleNextQuestion} 
-                  add="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {currentQuestionIndex < questions.length - 1 ? "Następne pytanie" : "Zakończ quiz"}
-                </Button>
-              </div>
-            )}
+            <div className={`transition-opacity duration-300 ${showResult ? 'opacity-100' : 'opacity-0 h-0'}`}>
+              {showResult && (
+                <div className="flex justify-center">
+                  <Button 
+                    onClick={handleNextQuestion} 
+                    add="bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 text-sm norse"
+                  >
+                    {currentQuestionIndex < questions.length - 1 ? "Next question" : "Finish quiz"}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="bg-[#27272a] p-8 rounded-lg shadow-xl border border-[#3f3f46] text-center">
-            <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: 'NorseBold, sans-serif' }}>
-              Quiz zakończony!
+            <h2 className="text-3xl font-bold mb-4 norse">
+              Quiz Completed!
             </h2>
-            <p className="text-2xl mb-6">Twój wynik: {score}/{questions.length}</p>
+            <p className="text-2xl mb-6 norse">Your score: {score}/{questions.length}</p>
             
             {score === questions.length ? (
-              <p className="mb-8 text-green-400">Doskonale! Jesteś mistrzem mitologii nordyckiej!</p>
+              <p className="mb-8 text-green-400 norse">Excellent! You are a master of Norse mythology!</p>
             ) : score >= questions.length * 0.7 ? (
-              <p className="mb-8 text-blue-400">Dobra robota! Masz solidną wiedzę o mitologii nordyckiej.</p>
+              <p className="mb-8 text-blue-400 norse">Good job! You have solid knowledge of Norse mythology.</p>
             ) : (
-              <p className="mb-8 text-yellow-400">Spróbuj jeszcze raz, aby lepiej poznać mitologię nordycką!</p>
+              <p className="mb-8 text-yellow-400 norse">Try again to learn more about Norse mythology!</p>
             )}
             
             <Button 
               onClick={restartQuiz} 
-              add="bg-blue-600 hover:bg-blue-700 text-white"
+              add="bg-blue-600 hover:bg-blue-700 text-white norse"
             >
-              Zagraj ponownie
+              Play again
             </Button>
           </div>
         )}
