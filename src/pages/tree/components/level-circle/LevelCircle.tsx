@@ -48,17 +48,28 @@ const LevelCircle = ({
     disabled ? 'bg-gray-400' : 'bg-black group-hover:bg-white'
   }`;
 
+<<<<<<< HEAD
   const labelClass = `flex justify-center hover:bg-white hover:text-black items-center w-60 h-10 text-lg font-bold skew-x-12 text-center transition-all duration-500 ${
     disabled
       ? 'bg-gray-400 text-gray-700'
       : 'bg-black text-white group-hover:bg-white group-hover:text-black'
+=======
+  const labelClass = `flex justify-center  items-center w-60 h-10 text-lg font-bold skew-x-12 text-center transition-all duration-500 ${
+      disabled
+          ? "bg-gray-400 text-gray-700  "
+          : "bg-black text-white  hover:bg-white hover:text-black group-hover:text-black"
+>>>>>>> main
   }`;
 
   const handleImageClick = (e: React.MouseEvent) => {
     e.preventDefault(); // zapobiega przeładowaniu linka
     if (!disabled) {
       setIsExpanded(true);
+        setTimeout(() => {
+            navigate(`/level${level}`);
+        }, 2000);
     }
+<<<<<<< HEAD
     setTimeout(() => {
       navigate(`/level${level}`);
     }, 2000);
@@ -80,6 +91,28 @@ const LevelCircle = ({
           }}
           whileHover={disabled ? {} : { opacity: 0.8 }}
         />
+=======
+
+  };
+
+  const content = (
+      <div onClick={handleImageClick}>
+        <div className={imageContainerClass} >
+          <motion.img
+              src={`/imgs/level${level}.webp`}
+              alt={`Level ${level}`}
+              className="w-full h-full object-cover opacity-100 "
+              style={disabled ? { opacity: 0.5 } : {}}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/imgs/placeholder.png";
+              }}
+              whileHover={disabled ? {} : { opacity: 0.8 }}
+          />
+        </div>
+        <div className={labelClass}>
+          {levelNames[level as keyof typeof levelNames] || `Level ${level}`}
+        </div>
+>>>>>>> main
       </div>
       <div className={labelClass}>
         {levelNames[level as keyof typeof levelNames] || `Level ${level}`}
