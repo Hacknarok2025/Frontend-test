@@ -8,19 +8,26 @@ import {useState} from "react";
 
 
 const Home = () => {
+
     const [isModalOpen, setModalOpen] = useState(false);
     return (
         <>
 
             {/* Kontener dla wideo tła */}
             <div className="fixed top-0 left-0 w-full h-full z-[1] overflow-hidden">
-                <iframe
-                    src="https://www.youtube.com/embed/viAEwY2IG8E?autoplay=1&mute=1&loop=1&controls=0&vq=4kstart=0&start=0&"
-                    className="w-full h-full scale-[1.2] "
-                    frameBorder="0"
-                    allow="autoplay; "
-                    allowFullScreen
-                />
+      <div className="fixed top-0 left-0 w-full h-full z-[1] overflow-hidden">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"
+        >
+          <source
+            src="https://bjtlziatyjsnvlqzdejp.supabase.co/storage/v1/object/public/backgroundvideo//videoplayback.mp4"
+            type="video/mp4"
+          />
+        </video>
                     {/* Nakładka dla lepszej czytelności tekstu */}
                 <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
             </div>
@@ -47,3 +54,4 @@ const Home = () => {
             />
         </>
     );
+
