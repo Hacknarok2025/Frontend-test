@@ -212,7 +212,7 @@ const Level4 = () => {
                 src={
                   item.type === 'hammer'
                     ? '/imgs/hammer.png'
-                    : '/imgs/pobrane.png'
+                    : '/imgs/apple.png'
                 }
                 alt={item.type === 'hammer' ? 'Mjölnir' : 'Skull'}
                 className="w-full h-full"
