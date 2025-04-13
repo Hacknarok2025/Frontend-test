@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import Modal3 from "@/commons/Modal3.tsx";
-import { motion, AnimatePresence } from "framer-motion";
+import Modal3 from '@/commons/Modal3.tsx';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Level1 = () => {
   const wordPool = [
@@ -79,9 +79,9 @@ const Level1 = () => {
     setSecretWord(selectedWord);
 
     const runicVersion = selectedWord
-        .split('')
-        .map((char) => runeMapping[char] || char)
-        .join('');
+      .split('')
+      .map((char) => runeMapping[char] || char)
+      .join('');
     setRuneWord(runicVersion);
   }, []);
 
@@ -139,12 +139,12 @@ const Level1 = () => {
     shake: {
       x: [0, -10, 10, -10, 10, -5, 5, 0],
       transition: {
-        duration: 0.5
-      }
+        duration: 0.5,
+      },
     },
     normal: {
-      x: 0
-    }
+      x: 0,
+    },
   };
   const resetGame = () => {
     setUserAnswer('');
@@ -160,9 +160,9 @@ const Level1 = () => {
     setSecretWord(selectedWord);
 
     const runicVersion = selectedWord
-        .split('')
-        .map((char) => runeMapping[char] || char)
-        .join('');
+      .split('')
+      .map((char) => runeMapping[char] || char)
+      .join('');
     setRuneWord(runicVersion);
   };
 
@@ -171,10 +171,10 @@ const Level1 = () => {
     visible: {
       opacity: 1,
       transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    }
+        when: 'beforeChildren',
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -183,9 +183,9 @@ const Level1 = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   const runeVariants = {
@@ -195,180 +195,182 @@ const Level1 = () => {
       opacity: 1,
       transition: {
         delay: i * 0.05,
-        type: "spring",
-        stiffness: 100
-      }
-    })
+        type: 'spring',
+        stiffness: 100,
+      },
+    }),
   };
 
   return (
-      <div
-          className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden relative"
-          style={{
-            backgroundImage: "url('/imgs/level1.webp')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-      >
-        {showConfetti && (
-            <div className="confetti absolute inset-0 pointer-events-none">
-              {[...Array(100)].map((_, i) => (
-                  <div
-                      key={i}
-                      className="confetti-piece absolute"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        width: `${Math.random() * 10 + 5}px`,
-                        height: `${Math.random() * 10 + 5}px`,
-                        backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                        transform: `rotate(${Math.random() * 360}deg)`,
-                        animation: `fall ${Math.random() * 3 + 2}s linear forwards`,
-                        animationDelay: `${Math.random() * 0.5}s`
-                      }}
-                  />
-              ))}
-            </div>
-        )}
+    <div
+      className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden relative"
+      style={{
+        backgroundImage: "url('/imgs/level1.webp')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {showConfetti && (
+        <div className="confetti absolute inset-0 pointer-events-none">
+          {[...Array(100)].map((_, i) => (
+            <div
+              key={i}
+              className="confetti-piece absolute"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 10 + 5}px`,
+                height: `${Math.random() * 10 + 5}px`,
+                backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                transform: `rotate(${Math.random() * 360}deg)`,
+                animation: `fall ${Math.random() * 3 + 2}s linear forwards`,
+                animationDelay: `${Math.random() * 0.5}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
-        <div
-
-            className="px-36 py-3 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-7xl w-full max-h-[95vh]"
+      <div className="px-36 py-3 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-7xl w-full max-h-[95vh]">
+        <motion.div
+          className="skew-x-12 flex flex-col"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <motion.div
-              className="skew-x-12 flex flex-col"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
+          <motion.h1
+            className="text-5xl font-bold mb-2 text-center"
+            style={{ fontFamily: 'Norse, serif' }}
+            variants={itemVariants}
           >
-            <motion.h1
-                className="text-5xl font-bold mb-2 text-center"
-                style={{ fontFamily: 'Norse, serif' }}
-                variants={itemVariants}
-            >
-              Nordic Puzzle
-            </motion.h1>
+            Nordic Puzzle
+          </motion.h1>
 
-            <motion.div className="  s mb-2 text-center" variants={itemVariants}>
-              <motion.div
-                  className="text-6xl font-bold text-red-600"
-                  animate={shake ? "shake" : "normal"}
-                  variants={shakeVariants}
-              >
-                Time remaining: {timeLeft} seconds
-              </motion.div>
-            </motion.div>
+          <motion.div className="  s mb-2 text-center" variants={itemVariants}>
             <motion.div
-                className="mb-2 skew-x-[-12deg] text-center bg-black text-white p-3"
-                variants={itemVariants}
+              className="text-6xl font-bold text-red-600"
+              animate={shake ? 'shake' : 'normal'}
+              variants={shakeVariants}
             >
-              <p className=" text-2xl mb-2">
-                Discover the hidden word by deciphering these runes:
-              </p>
-              <motion.div
-                  className="text-6xl skew-x-12 my-2 tracking-wider flex justify-center"
-                  style={{ fontFamily: 'Norse, serif' }}
-              >
-                {runeWord.split('').map((rune, i) => (
-                    <motion.span
-                        key={i}
-                        custom={i}
-                        variants={runeVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                      {rune}
-                    </motion.span>
-                ))}
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-                className="p-1 flex-grow flex flex-col"
-                variants={itemVariants}
-            >
-              <h2 className="text-7xl mb-2 text-center pt-1">Runic Alphabet</h2>
-              <div className="grid grid-cols-7 gap-2 text-3xl px-2 pb-2">
-                {Object.entries(runeMapping).map(([letter, rune], index) => (
-                    <motion.div
-                        key={letter}
-                        className="text-center p-1 border border-gray-300 rounded"
-                        variants={itemVariants}
-                        custom={index}
-                    >
-                      <div className="text-4xl">{rune}</div>
-                      <div className="text-3xl">{letter}</div>
-                    </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-                className="flex flex-col items-center m-3"
-                variants={itemVariants}
-            >
-              <div className="flex items-center w-full">
-                <input
-                    type="text"
-                    value={userAnswer}
-                    onChange={handleInputChange}
-                    className="flex-grow text-5xl skew-x-[-12deg] px-3 py-1 border-2 border-gray-400 mr-2"
-                    placeholder="Enter your answer..."
-
-                />
-                <motion.button
-                    onClick={checkAnswer}
-                    className={`skew-x-[-12deg] text-white text-5xl py-1 bg-blue-500 px-4 rounded`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                  Check
-                </motion.button>
-              </div>
+              Time remaining: {timeLeft} seconds
             </motion.div>
           </motion.div>
-        </div>
-
-        <AnimatePresence>
-          {isModalOpen3 && (
-              <Modal3
-                  open={isModalOpen3}
-                  onClose={() => setModalOpen3(false)}
-              >
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
+          <motion.div
+            className="mb-2 skew-x-[-12deg] text-center bg-black text-white p-3"
+            variants={itemVariants}
+          >
+            <p className=" text-2xl mb-2">
+              Discover the hidden word by deciphering these runes:
+            </p>
+            <motion.div
+              className="text-6xl skew-x-12 my-2 tracking-wider flex justify-center"
+              style={{ fontFamily: 'Norse, serif' }}
+            >
+              {runeWord.split('').map((rune, i) => (
+                <motion.span
+                  key={i}
+                  custom={i}
+                  variants={runeVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  <h1 className="text-3xl mb-6 font-bold">Good Job Warrior You Win!!!!</h1>
-                  <h2 className="text-3xl mb-3 font-bold">Your Score: {finalScore}</h2>
-                  <p className="text-3xl mb-3 font-bold">Time remaining: {timeWhenCompleted} seconds</p>
-                </motion.div>
-              </Modal3>
-          )}
-        </AnimatePresence>
+                  {rune}
+                </motion.span>
+              ))}
+            </motion.div>
+          </motion.div>
 
-        <AnimatePresence>
-          {isModalOpen4 && (
-              <Modal3
-                  onClick={() => { resetGame(); setModalOpen4(false) }}
-                  buttonText={"Again"}
-                  open={isModalOpen4}
-                  onClose={() => setModalOpen4(false)}
-              >
+          <motion.div
+            className="p-1 flex-grow flex flex-col"
+            variants={itemVariants}
+          >
+            <h2 className="text-7xl mb-2 text-center pt-1">Runic Alphabet</h2>
+            <div className="grid grid-cols-7 gap-2 text-3xl px-2 pb-2">
+              {Object.entries(runeMapping).map(([letter, rune], index) => (
                 <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
+                  key={letter}
+                  className="text-center p-1 border border-gray-300 rounded"
+                  variants={itemVariants}
+                  custom={index}
                 >
-                  <h1 className="text-3xl mb-6 font-bold">Try Again!!</h1>
+                  <div className="text-4xl">{rune}</div>
+                  <div className="text-3xl">{letter}</div>
                 </motion.div>
-              </Modal3>
-          )}
-        </AnimatePresence>
+              ))}
+            </div>
+          </motion.div>
 
-        <style>{`
+          <motion.div
+            className="flex flex-col items-center m-3"
+            variants={itemVariants}
+          >
+            <div className="flex items-center w-full">
+              <input
+                type="text"
+                value={userAnswer}
+                onChange={handleInputChange}
+                className="flex-grow text-5xl skew-x-[-12deg] px-3 py-1 border-2 border-gray-400 mr-2"
+                placeholder="Enter your answer..."
+              />
+              <motion.button
+                onClick={checkAnswer}
+                className={`skew-x-[-12deg] text-white text-5xl py-1 bg-blue-500 px-4 rounded`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Check
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      <AnimatePresence>
+        {isModalOpen3 && (
+          <Modal3 open={isModalOpen3} onClose={() => setModalOpen3(false)}>
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <h1 className="text-3xl mb-6 font-bold">
+                Good Job Warrior You Win!!!!
+              </h1>
+              <h2 className="text-3xl mb-3 font-bold">
+                Your Score: {finalScore}
+              </h2>
+              <p className="text-3xl mb-3 font-bold">
+                Time remaining: {timeWhenCompleted} seconds
+              </p>
+            </motion.div>
+          </Modal3>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isModalOpen4 && (
+          <Modal3
+            onClick={() => {
+              resetGame();
+              setModalOpen4(false);
+            }}
+            buttonText={'Again'}
+            open={isModalOpen4}
+            onClose={() => setModalOpen4(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <h1 className="text-3xl mb-6 font-bold">Try Again!!</h1>
+            </motion.div>
+          </Modal3>
+        )}
+      </AnimatePresence>
+
+      <style>{`
           @keyframes fall {
             to {
               transform: translateY(100vh) rotate(360deg);
@@ -380,7 +382,7 @@ const Level1 = () => {
             border-radius: 50%;
           }
         `}</style>
-      </div>
+    </div>
   );
 };
 
