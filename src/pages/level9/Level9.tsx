@@ -217,8 +217,8 @@ const Level9 = () => {
     // Instructions content with increased spacing between lines
     p5.textSize(p5.min(20, p5.width/32));
     p5.text('Press SPACE or click to start', p5.width/2, p5.height/2 - p5.height/20);
-    p5.text('Move with LEFT and RIGHT arrows, SPACE to jump', p5.width/2, p5.height/2 + p5.height/10); // Increased spacing
-    p5.text('Press X to attack with your lightning hammer', p5.width/2, p5.height/2 + p5.height/6); // Increased spacing 
+    p5.text('Move with , SPACE to jump', p5.width/2, p5.height/2 + p5.height/10); // Increased spacing
+    p5.text('Press SPACE to attack with your lightning hammer', p5.width/2, p5.height/2 + p5.height/6); // Increased spacing
     p5.text('Hit the ice giant 5 times to win!', p5.width/2, p5.height/2 + p5.height/4); // Increased spacing
     
     // Start game when space is pressed or mouse is clicked
