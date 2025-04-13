@@ -28,7 +28,7 @@ const Level1 = () => {
   ];
 
   const [userAnswer, setUserAnswer] = useState('');
-  const [error, setError] = useState(false);
+
   const [completed, setCompleted] = useState(false);
   const [secretWord, setSecretWord] = useState('');
   const [runeWord, setRuneWord] = useState('');
@@ -321,8 +321,7 @@ const Level1 = () => {
                 <Button
                     onClick={checkAnswer}
                     add="skew-x-[-12deg] text-white text-5xl py-1"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+
                 >
                   Check
                 </Button>
