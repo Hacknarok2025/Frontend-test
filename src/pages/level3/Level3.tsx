@@ -2,15 +2,17 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
 import { useUser } from '@/context/useUser';
+import Modal3 from '@/commons/Modal3.tsx';
+import { motion } from 'framer-motion';
+import Button from '@/components/own/button.tsx';
 
 const CELL_SIZE = 50;
 const COLS = 10;
 const ROWS = 10;
-const MOVE_SPEED = 8; // Zwiększona prędkość ruchu
-// Adjusted collision padding for better detection
-const COLLISION_PADDING = 3; // Increased to better detect obstacles
-const POINTS_PER_HAMMER = 25; // Punkty za każdy młot
-const MAX_POINTS = 100; // Maksymalna liczba punktów
+const MOVE_SPEED = 8;
+const COLLISION_PADDING = 3;
+const POINTS_PER_HAMMER = 12.5;
+const MAX_POINTS = 100;
 
 interface Player {
   x: number;
@@ -37,9 +39,14 @@ const Level3 = () => {
   const [grid, setGrid] = useState<boolean[][]>([]);
   const [collectibles, setCollectibles] = useState<Collectible[]>([]);
   const [score, setScore] = useState(0);
+  const [gameTime, setGameTime] = useState(0);
+  const [isGameComplete, setIsGameComplete] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const playerImage = useRef<p5Types.Image | null>(null);
   const collectibleImage = useRef<p5Types.Image | null>(null);
   const p5Instance = useRef<p5Types | null>(null);
+  const gameStartTime = useRef<number>(0);
+  const timerInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Setup grid with obstacles and collectibles
   const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -55,11 +62,12 @@ const Level3 = () => {
       .fill(false)
       .map(() => Array(COLS).fill(false));
 
-    // Add some obstacles (true means there's an obstacle)
+    // Add some obstacles
     const obstacles = [
       { x: 3, y: 2 },
       { x: 3, y: 3 },
       { x: 7, y: 5 },
+      { x: 9, y: 0 },
       { x: 2, y: 7 },
       { x: 5, y: 4 },
       { x: 8, y: 8 },
@@ -92,17 +100,32 @@ const Level3 = () => {
         collected: false,
       },
       {
-        x: 7 * CELL_SIZE + CELL_SIZE / 2 - 5,
-        y: 7 * CELL_SIZE + CELL_SIZE / 2 - 5,
+        x: 7 * CELL_SIZE + CELL_SIZE / 2,
+        y: 7 * CELL_SIZE + CELL_SIZE / 2,
         collected: false,
-      }, // Adjusted position slightly
+      },
     ];
 
     setCollectibles(newCollectibles);
+
+    // Start timer
+    gameStartTime.current = Date.now();
+    timerInterval.current = setInterval(() => {
+      setGameTime(Math.floor((Date.now() - gameStartTime.current) / 1000));
+    }, 1000);
   };
 
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerInterval.current) {
+        clearInterval(timerInterval.current);
+      }
+    };
+  }, []);
+
   const draw = (p5: p5Types) => {
-    p5.background(220, 240, 255); // Ice blue background
+    p5.background(220, 240, 255);
 
     // Draw ice floor
     p5.stroke(200, 220, 240);
@@ -158,27 +181,23 @@ const Level3 = () => {
 
     // Handle movement logic
     if (player.isMoving) {
-      // Calculate next position
       const nextX = player.x + player.direction.x * MOVE_SPEED;
       const nextY = player.y + player.direction.y * MOVE_SPEED;
 
-      // Check if out of bounds
       const isOutOfBounds =
         nextX - CELL_SIZE / 2 < 0 ||
         nextX + CELL_SIZE / 2 > COLS * CELL_SIZE ||
         nextY - CELL_SIZE / 2 < 0 ||
         nextY + CELL_SIZE / 2 > ROWS * CELL_SIZE;
 
-      // Check for collision with obstacles
       const playerSize = CELL_SIZE / COLLISION_PADDING;
       const checkPoints = [
-        { x: nextX - playerSize / 2, y: nextY - playerSize / 2 }, // Top left
-        { x: nextX + playerSize / 2, y: nextY - playerSize / 2 }, // Top right
-        { x: nextX - playerSize / 2, y: nextY + playerSize / 2 }, // Bottom left
-        { x: nextX + playerSize / 2, y: nextY + playerSize / 2 }, // Bottom right
+        { x: nextX - playerSize / 2, y: nextY - playerSize / 2 },
+        { x: nextX + playerSize / 2, y: nextY - playerSize / 2 },
+        { x: nextX - playerSize / 2, y: nextY + playerSize / 2 },
+        { x: nextX + playerSize / 2, y: nextY + playerSize / 2 },
       ];
 
-      // Check if any corner of the player is inside an obstacle
       let collidesWithObstacle = isOutOfBounds;
 
       if (!isOutOfBounds) {
@@ -197,40 +216,54 @@ const Level3 = () => {
       }
 
       if (collidesWithObstacle) {
-        // Stop moving if hitting an obstacle
         setPlayer((prev) => ({
           ...prev,
           isMoving: false,
           direction: { x: 0, y: 0 },
         }));
       } else {
-        // Continue sliding
         setPlayer((prev) => ({
           ...prev,
           x: nextX,
           y: nextY,
         }));
 
-        // Check for collectible
         checkCollectibles(nextX, nextY);
       }
     }
   };
 
   const checkCollectibles = (x: number, y: number) => {
-    setCollectibles((prevCollectibles) =>
-      prevCollectibles.map((collectible) => {
+    setCollectibles((prevCollectibles) => {
+      let anyCollected = false;
+      const updatedCollectibles = prevCollectibles.map((collectible) => {
         if (
           !collectible.collected &&
-          Math.abs(collectible.x - x) < 35 && // Increased detection radius from 25 to 35
-          Math.abs(collectible.y - y) < 35 // Increased detection radius from 25 to 35
+          Math.abs(collectible.x - x) < 35 &&
+          Math.abs(collectible.y - y) < 35
         ) {
-          setScore((prev) => prev + POINTS_PER_HAMMER);
+          anyCollected = true;
           return { ...collectible, collected: true };
         }
         return collectible;
-      })
-    );
+      });
+
+      if (anyCollected) {
+        setScore((prevScore) => {
+          const newScore = prevScore + POINTS_PER_HAMMER;
+          if (newScore >= MAX_POINTS) {
+            setIsGameComplete(true);
+            setIsModalOpen(true);
+            if (timerInterval.current) {
+              clearInterval(timerInterval.current);
+            }
+          }
+          return newScore;
+        });
+      }
+
+      return updatedCollectibles;
+    });
   };
 
   const checkWinCondition = () => {
@@ -245,28 +278,21 @@ const Level3 = () => {
     checkWinCondition();
   }, [score]);
 
-  // Obsługa klawiszy strzałek i WASD z poprawną zależnością
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
-      // Only accept input when player is not moving
-      if (player.isMoving) return;
+      if (player.isMoving || isGameComplete) return;
 
       let newDirection = { x: 0, y: 0 };
-
-      // Handle arrow key or WASD inputs
       const key = e.key.toLowerCase();
 
-      if (key === 'arrowup' || key === 'w') {
-        newDirection = { x: 0, y: -1 };
-      } else if (key === 'arrowdown' || key === 's') {
+      if (key === 'arrowup' || key === 'w') newDirection = { x: 0, y: -1 };
+      else if (key === 'arrowdown' || key === 's')
         newDirection = { x: 0, y: 1 };
-      } else if (key === 'arrowleft' || key === 'a') {
+      else if (key === 'arrowleft' || key === 'a')
         newDirection = { x: -1, y: 0 };
-      } else if (key === 'arrowright' || key === 'd') {
+      else if (key === 'arrowright' || key === 'd')
         newDirection = { x: 1, y: 0 };
-      }
 
-      // Only start moving if a direction key was pressed
       if (newDirection.x !== 0 || newDirection.y !== 0) {
         setPlayer((prev) => ({
           ...prev,
@@ -275,39 +301,114 @@ const Level3 = () => {
         }));
       }
     },
-    [player.isMoving]
+    [player.isMoving, isGameComplete]
   );
 
-  // Rejestrujemy obsługę klawiszy w window jako Event Listener
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
-  // Oryginalna funkcja keyPressed dla zgodności z p5
-  const keyPressed = () => {
-    // Ta funkcja będzie pusta, ponieważ obsługujemy klawisze przez event listener
+  const keyPressed = () => {};
+
+  const resetGame = () => {
+    setPlayer({
+      x: CELL_SIZE * 1.5,
+      y: CELL_SIZE * 1.5,
+      isMoving: false,
+      direction: { x: 0, y: 0 },
+    });
+    setScore(0);
+    setGameTime(0);
+    setIsGameComplete(false);
+    setIsModalOpen(false);
+
+    // Reset collectibles
+    setCollectibles([
+      {
+        x: 5 * CELL_SIZE + CELL_SIZE / 2,
+        y: 2 * CELL_SIZE + CELL_SIZE / 2,
+        collected: false,
+      },
+      {
+        x: 8 * CELL_SIZE + CELL_SIZE / 2,
+        y: 3 * CELL_SIZE + CELL_SIZE / 2,
+        collected: false,
+      },
+      {
+        x: 2 * CELL_SIZE + CELL_SIZE / 2,
+        y: 5 * CELL_SIZE + CELL_SIZE / 2,
+        collected: false,
+      },
+      {
+        x: 7 * CELL_SIZE + CELL_SIZE / 2 - 5,
+        y: 7 * CELL_SIZE + CELL_SIZE / 2,
+        collected: false,
+      },
+    ]);
+
+    // Restart timer
+    gameStartTime.current = Date.now();
+    if (timerInterval.current) {
+      clearInterval(timerInterval.current);
+    }
+    timerInterval.current = setInterval(() => {
+      setGameTime(Math.floor((Date.now() - gameStartTime.current) / 1000));
+    }, 1000);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-blue-900">
-      <h1 className="text-4xl font-bold text-white mb-4">
-        Jotunheim - Ice Slide
-      </h1>
-      <div className="mb-4 text-white text-xl">
-        Punkty: {score}/{MAX_POINTS}
-      </div>
-      <Sketch
-        setup={setup as any}
-        draw={draw as any}
-        keyPressed={keyPressed as any}
-      />
-      <div className="mt-4 text-white text-lg">
-        Use arrow keys or WASD to slide across the ice. Collect all the Mjolnir
-        pieces!
-      </div>
+    <div
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: 'url(/imgs/level3.webp' }}
+    >
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className=""
+      >
+        <h1 className="text-4xl font-bold text-white mb-4">
+          Jotunheim - Ice Slide
+        </h1>
+        <div className="mb-4 text-white text-xl">
+          Punkty: {score}/{MAX_POINTS} | Czas: {gameTime}s
+        </div>
+        <Sketch
+          setup={setup as any}
+          draw={draw as any}
+          keyPressed={keyPressed as any}
+        />
+        <div className="mt-4 text-white text-lg">
+          Use arrow keys or WASD to slide across the ice. Collect all the
+          Mjolnir pieces!
+        </div>
+      </motion.div>
+      <Modal3 open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 100 }}
+          className="flex flex-col items-center"
+        >
+          <h1 className="text-4xl font-bold mb-6 norse text-center">
+            {gameTime <= 30
+              ? "Excellent! You're a true Viking!"
+              : gameTime <= 60
+              ? 'Good job, warrior!'
+              : 'You completed the challenge!'}
+          </h1>
+          <h2 className="text-3xl mb-3 font-bold norse">
+            Time: {gameTime} seconds
+          </h2>
+          <h2 className="text-3xl mb-6 font-bold norse">
+            Score: {score} points
+          </h2>
+          <Button onClick={resetGame} add="text-white text-3xl">
+            Play Again
+          </Button>
+        </motion.div>
+      </Modal3>
     </div>
   );
 };

@@ -61,7 +61,7 @@ const Modal3: React.FC<ModalProps> = ({ open, onClose, children, onClick, button
                         <div className="mt-6 flex justify-end skew-x-[-24deg]">
                             <Button
                                 onClick={handleButtonClick}
-                                add={"px-18 text-4xl hover:bg-white hover:text-black skew-x-[24deg] border-2 border-solid border-black text-white"}
+                                add={"px-18 text-4xl hover:bg-white hover:text-black skew-x-[24deg] border-2 border-solid border-black  text-white"}
                             >
                                 {buttonText}
                             </Button>

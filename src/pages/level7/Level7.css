@@ -8,99 +8,115 @@
   padding: 0;
   overflow: hidden;
   background-color: #1a1a2e;
+  background-image: url('/imgs/level7.webp');
+  background-size: cover;
+  background-position: center;
   position: relative;
-}
-
-/* Remove the circular background since we're using an image now */
-.viking-game-container::before {
-  content: none;
 }
 
 .game-inner-container {
   display: flex;
-  flex-direction: column;
+  flex-direction:column-reverse;
   align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   max-width: 95vw;
-  padding: 0;
+  padding: 20px;
   position: relative;
   z-index: 1;
 }
 
 .game-title {
-  font-size: 2rem;
-  margin: 10px 0;
-  color: #ffffff; /* White text */
+  font-size: 3rem;
+  margin: 20px 0;
+  color: #ffffff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   font-family: 'Norse', 'Arial', sans-serif;
 }
 
 .game-canvas {
-  border: 4px solid #43516e;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 900px;
+  height: 70vh;
+  min-height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+
 }
 
 .game-canvas canvas {
   display: block !important;
+  width: 100% !important;
+  height: 100% !important;
   max-width: 100% !important;
-  max-height: 70vh !important;
-  width: auto !important;
-  height: auto !important;
+  max-height: 100% !important;
   object-fit: contain;
 }
 
 .game-instructions {
-  margin-top: 10px;
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
-  padding: 10px;
+  margin-top: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
   border-radius: 8px;
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   text-align: center;
-  font-size: 0.8rem;
-  color: #ffffff; /* White text */
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin-bottom: 24px;
 }
 
 .game-instructions h2 {
-  color: #ffffff; /* White text */
-  margin: 5px 0;
+  color: #ffffff;
+  margin: 10px 0;
   font-family: 'Norse', 'Arial', sans-serif;
-  font-size: 1.2rem;
+  font-size: 2rem;
 }
 
 .game-instructions p {
-  margin: 5px 0;
-  font-size: 0.9rem;
-  color: #ffffff; /* White text */
+  margin: 10px 0;
+  color: #ffffff;
+  font-size: 1.2rem;
 }
 
-@media (max-width: 840px) {
-  .viking-game-container {
-    padding: 5px;
+@media (max-width: 768px) {
+  .game-inner-container {
+    flex-direction: column;
   }
-  
+
   .game-title {
-    font-size: 1.6rem;
-    margin: 5px 0;
+    font-size: 2rem;
+    margin: 10px 0;
   }
-  
+
+  .game-canvas {
+    width: 95%;
+    height: 60vh;
+    min-height: 400px;
+  }
+
   .game-instructions {
-    padding: 8px;
-    margin-top: 5px;
+    width: 95%;
+    padding: 15px;
   }
-  
+
+  .game-instructions h2 {
+    font-size: 1.5rem;
+  }
+
   .game-instructions p {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 }
 
-/* Use Norse font for headings */
+/* Font faces remain the same */
 @font-face {
   font-family: 'Norse';
   src: url('/fonts/Norse-KaWl.otf') format('opentype');
