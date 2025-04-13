@@ -91,7 +91,7 @@ const Tree = () => {
               >
                 <LevelCircle
                   level={l}
-                  disabled={l !== user?.current_level}
+                  disabled={false}
                   top={positions[l].top}
                   left={positions[l].left}
                 />
