@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import InstructionsModal from './InstructionsModal';
 
 type LevelCircleProps = {
   level: number;
@@ -28,13 +28,14 @@ const LevelCircle = ({
   disabled = false,
 }: LevelCircleProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const containerVariants = {
     initial: { scale: 1 },
     hover: { scale: 1.1 },
     tap: { scale: 0.95 },
   };
-  const navigate = useNavigate();
+
   const clickVariants = {
     initial: { opacity: 1 },
     animate: { opacity: 0, transition: { duration: 0.3 } },
@@ -48,20 +49,25 @@ const LevelCircle = ({
     disabled ? 'bg-gray-400' : 'bg-black group-hover:bg-white'
   }`;
 
-  const labelClass = `flex justify-center  items-center w-60 h-10 text-lg font-bold skew-x-12 text-center transition-all duration-500 ${
+  const labelClass = `flex justify-center items-center w-60 h-10 text-lg font-bold skew-x-12 text-center transition-all duration-500 ${
     disabled
-      ? 'bg-gray-400 text-gray-700  '
-      : 'bg-black text-white  hover:bg-white hover:text-black group-hover:text-black'
+      ? 'bg-gray-400 text-gray-700'
+      : 'bg-black text-white hover:bg-white hover:text-black group-hover:text-black'
   }`;
 
   const handleImageClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // zapobiega przeładowaniu linka
+    e.preventDefault();
     if (!disabled) {
       setIsExpanded(true);
       setTimeout(() => {
-        navigate(`/level${level}`);
-      }, 2000);
+        setShowInstructions(true);
+      }, 1000);
     }
+  };
+
+  const handleCloseInstructions = () => {
+    setShowInstructions(false);
+    setIsExpanded(false);
   };
 
   const content = (
@@ -111,7 +117,6 @@ const LevelCircle = ({
         </motion.div>
       )}
 
-      {/* Fullscreen expanded image */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -125,12 +130,24 @@ const LevelCircle = ({
             <motion.img
               src={`/imgs/level${level}.webp`}
               alt={`Level ${level}`}
-              className="w-[100vw] h-[100vh] object-cover "
+              className="w-[100vw] h-[100vh] object-cover"
               initial={{ scale: 0.7 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
             />
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showInstructions && (
+          <InstructionsModal
+            level={level}
+            onClose={() => {
+              handleCloseInstructions();
+              setIsExpanded(false);
+            }}
+          />
         )}
       </AnimatePresence>
     </>
