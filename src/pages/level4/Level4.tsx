@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Button from '@/components/own/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal3 from '@/commons/Modal3';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 interface GameItem {
   id: string;

@@ -11,6 +11,7 @@ import Level6 from '@/pages/level6/Level6.tsx';
 import Level7 from '@/pages/level7/Level7.tsx';
 import Level8 from './pages/level8/Level8.tsx';
 import Level9 from '@/pages/level9/Level9.tsx';
+import Leaderboard from './pages/leaderboard/Leaderboard.tsx';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/level7" element={<Level7 />} />
           <Route path="/level8" element={<Level8 />} />
           <Route path="/level9" element={<Level9 />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </div>
     </UserProvider>

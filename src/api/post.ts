@@ -41,6 +41,9 @@ export const postPlayerData = (body: PlayerData) => {
   return postToApi<PlayerData, DBUserData>('/users/login', body);
 };
 
-// export const postText = (body: TextType) => {
-//   return postToApi<TextType, NotFilledFlashcardsType>("/text", body);
-// };
+export const postNewScore = (body: any) => {
+  return postToApi<any, any>(
+    `/levels/${body.levelId}/complete%user_id=${body.userId}`,
+    { score: body.score }
+  );
+};

@@ -3,7 +3,7 @@ import type p5Types from 'p5';
 import Sketch from 'react-p5';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal3 from '@/commons/Modal3.tsx';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 const CELL_SIZE = 40;
 const COLS = 20;

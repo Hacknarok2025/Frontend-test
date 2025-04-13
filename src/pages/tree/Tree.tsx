@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LevelCircle from './components/level-circle/LevelCircle';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 const Tree = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -91,7 +91,7 @@ const Tree = () => {
               >
                 <LevelCircle
                   level={l}
-                  disabled={l > 11}
+                  disabled={l !== user?.current_level}
                   top={positions[l].top}
                   left={positions[l].left}
                 />

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 import './Level7.css';
 
 interface Fireball {

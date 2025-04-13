@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Button from '../../components/own/button';
 import Modal3 from '@/commons/Modal3.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 const Level1 = () => {
   const { user, updateScore, updateLevel } = useUser();
@@ -37,8 +37,8 @@ const Level1 = () => {
   const [runeWord, setRuneWord] = useState('');
   const [timeLeft, setTimeLeft] = useState(30);
   const [gameOver, setGameOver] = useState(false);
-  const [isModalOpen3, setModalOpen3] = useState(false);
-  const [isModalOpen4, setModalOpen4] = useState(false);
+  const [isModalOpen3, setIsModalOpen3] = useState(false);
+  const [isModalOpen4, setIsModalOpen4] = useState(false);
   const [timeWhenCompleted, setTimeWhenCompleted] = useState<number>(null);
   const [finalScore, setFinalScore] = useState<number>(0);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -87,12 +87,12 @@ const Level1 = () => {
       .map((char) => runeMapping[char] || char)
       .join('');
     setRuneWord(runicVersion);
-  }, [wordPool, runeMapping]);
+  }, []);
 
   useEffect(() => {
     if (timeLeft <= 0) {
       setGameOver(true);
-      setModalOpen4(true);
+      setIsModalOpen4(true);
       return;
     }
 
@@ -119,9 +119,9 @@ const Level1 = () => {
       setTimeWhenCompleted(timeLeft);
       setFinalScore(calculateScore(timeLeft));
       setShowConfetti(true);
-      setTimeout(() => setModalOpen3(true), 1500);
+      setTimeout(() => setIsModalOpen3(true), 1500);
     }
-  }, [completed, timeLeft]);
+  }, [completed]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserAnswer(e.target.value);
@@ -129,20 +129,34 @@ const Level1 = () => {
 
   const [shake, setShake] = useState(false);
 
-  const checkAnswer = () => {
-    if (userAnswer.toUpperCase() === secretWord) {
-      setModalOpen3(true);
-      setCompleted(true);
-      const newScore = (timeWhenCompleted || 60) * 10;
-      updateScore(user?.score ? user.score + newScore : newScore);
+  const checkAnswer = () => {};
+  if (userAnswer.toUpperCase() === secretWord) {
+    setIsModalOpen3(true);
+    setCompleted(true);
+    const newScore = (timeWhenCompleted || 60) * 10;
+    if (user.current_level === 1) {
+      updateScore(
+        user?.score
+          ? user.score + calculateScore(timeLeft)
+          : calculateScore(timeLeft)
+      );
       updateLevel(2); // Move to next level
     } else {
-      setModalOpen4(true);
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
+      setIsModalOpen4(true);
     }
-  };
+  }
 
+  const shakeVariants = {
+    shake: {
+      x: [0, -10, 10, -10, 10, -5, 5, 0],
+      transition: {
+        duration: 0.5,
+      },
+    },
+    normal: {
+      x: 0,
+    },
+  };
   const resetGame = () => {
     setUserAnswer('');
     setCompleted(false);
@@ -161,6 +175,17 @@ const Level1 = () => {
       .map((char) => runeMapping[char] || char)
       .join('');
     setRuneWord(runicVersion);
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: 'beforeChildren',
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -185,18 +210,6 @@ const Level1 = () => {
         stiffness: 100,
       },
     }),
-  };
-
-  const shakeVariants = {
-    shake: {
-      x: [0, -10, 10, -10, 10, -5, 5, 0],
-      transition: {
-        duration: 0.5,
-      },
-    },
-    normal: {
-      x: 0,
-    },
   };
 
   return (
@@ -230,7 +243,7 @@ const Level1 = () => {
         </div>
       )}
 
-      <div className="px-20 py-2 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-5xl w-full max-h-[85vh] overflow-hidden">
+      <div className="px-20 py-2 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-5xl w-full max-h-[95vh] overflow-hidden">
         <motion.h1
           className="text-4xl font-bold mb-1 text-center"
           style={{ fontFamily: 'Norse, serif' }}
@@ -250,10 +263,10 @@ const Level1 = () => {
         </motion.div>
 
         <motion.div
-          className="mb-2 skew-x-[-12deg] text-center bg-black text-white p-3"
+          className="mb-2 skew-x-[-12deg] text-center bg-black text-white p-1"
           variants={itemVariants}
         >
-          <p className="text-2xl mb-2">
+          <p className="text-2xl mb-1">
             Discover the hidden word by deciphering these runes:
           </p>
           <motion.div
@@ -283,12 +296,12 @@ const Level1 = () => {
             {Object.entries(runeMapping).map(([letter, rune], index) => (
               <motion.div
                 key={letter}
-                className="text-center p-1 border border-gray-300 rounded"
+                className="text-center border border-gray-300 rounded"
                 variants={itemVariants}
                 custom={index}
               >
-                <div className="text-4xl">{rune}</div>
-                <div className="text-3xl">{letter}</div>
+                <div className="text-3xl">{rune}</div>
+                <div className="text-xl">{letter}</div>
               </motion.div>
             ))}
           </div>
@@ -318,7 +331,7 @@ const Level1 = () => {
 
       <AnimatePresence>
         {isModalOpen3 && (
-          <Modal3 open={isModalOpen3} onClose={() => setModalOpen3(false)}>
+          <Modal3 open={isModalOpen3} onClose={() => setIsModalOpen3(false)}>
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -343,18 +356,18 @@ const Level1 = () => {
           <Modal3
             onClick={() => {
               resetGame();
-              setModalOpen4(false);
+              setIsModalOpen4(false);
             }}
             buttonText={'Again'}
             open={isModalOpen4}
-            onClose={() => setModalOpen4(false)}
+            onClose={() => setIsModalOpen4(false)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
             >
-              <h1 className="text-3xl mb-6 font-bold">Try Again!!</h1>
+              <h1 className="text-3xl mb-6 font-bold">Try Again!</h1>
             </motion.div>
           </Modal3>
         )}

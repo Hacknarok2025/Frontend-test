@@ -28,3 +28,9 @@ export type DBUserData = {
   score: number;
   current_level: number;
 };
+
+export type PostNewScoreType = {
+  levelId: number;
+  userId: number;
+  score: number;
+};

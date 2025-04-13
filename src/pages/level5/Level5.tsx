@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Button from '@/components/own/button';
 import Modal3 from '@/commons/Modal3';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 // Define rune types and their meanings
 type RuneType = 'fehu' | 'uruz' | 'thurisaz' | 'ansuz' | 'raidho' | 'kenaz';

@@ -4,7 +4,7 @@ import Input from '@/components/own/input';
 import { useNavigate } from 'react-router-dom';
 import { postPlayerData } from '@/api/post';
 import { useState } from 'react';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 interface ModalProps {
   open: boolean;

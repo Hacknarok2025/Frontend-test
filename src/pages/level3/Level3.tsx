@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import type p5Types from 'p5';
 import Sketch from 'react-p5';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 const CELL_SIZE = 50;
 const COLS = 10;

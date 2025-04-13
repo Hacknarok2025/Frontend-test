@@ -21,8 +21,11 @@ import {
   initEnemy,
   checkGameOver,
 } from './utils/gameManager';
+import { useNavigate } from 'react-router-dom';
 
 const Level9 = () => {
+  const navigate = useNavigate();
+
   // Game state
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
@@ -362,7 +365,7 @@ const Level9 = () => {
       // Play again instruction
       p5.textSize(p5.min(20, p5.width / 32));
       p5.text(
-        'Press SPACE to play again',
+        'Press SPACE to play finish',
         p5.width / 2,
         p5.height / 2 + p5.height / 5
       ); // Increased spacing
@@ -371,7 +374,7 @@ const Level9 = () => {
     // Check for restart input (space key)
     if (p5.keyIsDown(32)) {
       // 32 is spacebar
-      resetGame();
+      navigate('/leaderboard');
     }
   };
 

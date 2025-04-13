@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/own/button.tsx';
 import Modal2 from '@/commons/Modal2.tsx';
 import Modal3 from '@/commons/Modal3.tsx';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 type Card = {
   id: number;

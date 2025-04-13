@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Modal3 from '@/commons/Modal3.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUser } from '@/context/UserContext';
+import { useUser } from '@/context/useUser';
 
 interface Question {
   id: number;
