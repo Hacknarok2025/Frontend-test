@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Modal3 from '@/commons/Modal3.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUser } from '@/context/UserContext';
 
 interface Question {
   id: number;
@@ -88,6 +89,7 @@ const questionPool: Question[] = [
 ];
 
 const Level8 = () => {
+  const { user, updateScore, updateLevel } = useUser();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -131,6 +133,12 @@ const Level8 = () => {
     return () => clearInterval(countdown);
   }, [currentQuestionIndex, quizCompleted, showExplanation, questions]);
 
+  useEffect(() => {
+    if (currentQuestionIndex === questions.length) {
+      handleQuizComplete();
+    }
+  }, [currentQuestionIndex, questions.length]);
+
   const handleAnswer = (answerIndex: number) => {
     const currentQuestion = questions[currentQuestionIndex];
     setSelectedAnswer(answerIndex);
@@ -156,6 +164,13 @@ const Level8 = () => {
       setShowFinalScore(true);
       setModalOpen3(true);
     }
+  };
+
+  const handleQuizComplete = () => {
+    const finalScore = Math.floor((score / questions.length) * 100);
+    setQuizCompleted(true);
+    updateScore(user?.score ? user.score + finalScore : finalScore);
+    updateLevel(9);
   };
 
   const restartQuiz = () => {

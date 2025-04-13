@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Button from '@/components/own/button';
 import Modal3 from '@/commons/Modal3';
+import { useUser } from '@/context/UserContext';
 
 // Define rune types and their meanings
 type RuneType = 'fehu' | 'uruz' | 'thurisaz' | 'ansuz' | 'raidho' | 'kenaz';
@@ -21,6 +22,8 @@ const BOARD_SIZE = 8;
 const MIN_MATCH_LENGTH = 3;
 
 const Level5 = () => {
+  const { user, updateScore, updateLevel } = useUser();
+
   // Game state
   const [board, setBoard] = useState<Rune[][]>([]);
   const [score, setScore] = useState(0);
@@ -389,6 +392,18 @@ const Level5 = () => {
 
     return () => clearInterval(timer);
   }, [gameStarted, gameOver, gameWon]);
+
+  // Check win condition
+  useEffect(() => {
+    if (score >= targetScore && !gameWon) {
+      setGameWon(true);
+      setGameStarted(false);
+      setIsModalOpen(true);
+      // Update global score and level
+      updateScore(user?.score ? user.score + score : score);
+      updateLevel(6);
+    }
+  }, [score, targetScore, gameWon]);
 
   // Initialize game board on component mount
   useEffect(() => {

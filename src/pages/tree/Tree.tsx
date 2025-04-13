@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LevelCircle from './components/level-circle/LevelCircle';
+import { useUser } from '@/context/UserContext';
 
 const Tree = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const { user } = useUser();
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -34,6 +36,19 @@ const Tree = () => {
           transition={{ duration: 0.8 }}
           className="relative"
         >
+          {/* User info display */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="fixed top-4 right-4 bg-black/80 text-white p-4 rounded-lg z-50"
+          >
+            <h2 className="text-2xl font-bold mb-1 norse">
+              {user?.name || 'Warrior'}
+            </h2>
+            <p className="text-xl norse">Score: {user?.score || 0}</p>
+          </motion.div>
+
           <motion.img
             src="/imgs/tree-bg.png"
             alt="Tree Background"

@@ -4,6 +4,7 @@ import Input from '@/components/own/input';
 import { useNavigate } from 'react-router-dom';
 import { postPlayerData } from '@/api/post';
 import { useState } from 'react';
+import { useUser } from '@/context/UserContext';
 
 interface ModalProps {
   open: boolean;
@@ -12,8 +13,8 @@ interface ModalProps {
 
 const Modal1: React.FC<ModalProps> = ({ open, onClose }) => {
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
@@ -23,12 +24,21 @@ const Modal1: React.FC<ModalProps> = ({ open, onClose }) => {
   };
 
   const loginUser = async () => {
+    console.log({
+      name,
+      email: 'a',
+      password,
+    });
     try {
-      await postPlayerData({
+      const result = await postPlayerData({
         name,
-        email,
+        email: 'a',
         password,
       });
+
+      setUser(result);
+
+      console.log(result);
     } catch (error) {
       console.log(error);
     }
@@ -74,13 +84,6 @@ const Modal1: React.FC<ModalProps> = ({ open, onClose }) => {
                 size={'2xl'}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-              />
-              <Input
-                type={'email'}
-                placeholder={'Email'}
-                size={'2xl'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
               <Input
                 type={'password'}
