@@ -234,8 +234,7 @@ const Level1 = () => {
         )}
 
         <div
-
-            className="px-36 py-3 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-7xl w-full max-h-[95vh]"
+            className="px-20 py-2 skew-x-[-12deg] bg-white bg-opacity-80 shadow-xl max-w-5xl w-full max-h-[85vh] overflow-hidden"
         >
           <motion.div
               className="skew-x-12 flex flex-col"
@@ -244,16 +243,16 @@ const Level1 = () => {
               animate="visible"
           >
             <motion.h1
-                className="text-5xl font-bold mb-2 text-center"
+                className="text-4xl font-bold mb-1 text-center"
                 style={{ fontFamily: 'Norse, serif' }}
                 variants={itemVariants}
             >
               Nordic Puzzle
             </motion.h1>
 
-            <motion.div className="  s mb-2 text-center" variants={itemVariants}>
+            <motion.div className="mb-1 text-center" variants={itemVariants}>
               <motion.div
-                  className="text-6xl font-bold text-red-600"
+                  className="text-4xl font-bold text-red-600"
                   animate={shake ? "shake" : "normal"}
                   variants={shakeVariants}
               >
@@ -261,14 +260,14 @@ const Level1 = () => {
               </motion.div>
             </motion.div>
             <motion.div
-                className="mb-2 skew-x-[-12deg] text-center bg-black text-white p-3"
+                className="mb-1 skew-x-[-12deg] text-center bg-black text-white p-2"
                 variants={itemVariants}
             >
-              <p className=" text-2xl mb-2">
+              <p className="text-xl mb-1">
                 Discover the hidden word by deciphering these runes:
               </p>
               <motion.div
-                  className="text-6xl skew-x-12 my-2 tracking-wider flex justify-center"
+                  className="text-5xl skew-x-12 my-1 tracking-wider flex justify-center"
                   style={{ fontFamily: 'Norse, serif' }}
               >
                 {runeWord.split('').map((rune, i) => (
@@ -289,8 +288,8 @@ const Level1 = () => {
                 className="p-1 flex-grow flex flex-col"
                 variants={itemVariants}
             >
-              <h2 className="text-7xl mb-2 text-center pt-1">Runic Alphabet</h2>
-              <div className="grid grid-cols-7 gap-2 text-3xl px-2 pb-2">
+              <h2 className="text-5xl mb-1 text-center pt-1">Runic Alphabet</h2>
+              <div className="grid grid-cols-7 gap-1 text-2xl px-2 pb-1">
                 {Object.entries(runeMapping).map(([letter, rune], index) => (
                     <motion.div
                         key={letter}
@@ -298,15 +297,15 @@ const Level1 = () => {
                         variants={itemVariants}
                         custom={index}
                     >
-                      <div className="text-4xl">{rune}</div>
-                      <div className="text-3xl">{letter}</div>
+                      <div className="text-3xl">{rune}</div>
+                      <div className="text-2xl">{letter}</div>
                     </motion.div>
                 ))}
               </div>
             </motion.div>
 
             <motion.div
-                className="flex flex-col items-center m-3"
+                className="flex flex-col items-center m-2"
                 variants={itemVariants}
             >
               <div className="flex items-center w-full">
@@ -314,13 +313,13 @@ const Level1 = () => {
                     type="text"
                     value={userAnswer}
                     onChange={handleInputChange}
-                    className="flex-grow text-5xl skew-x-[-12deg] px-3 py-1 border-2 border-gray-400 mr-2"
+                    className="flex-grow text-4xl skew-x-[-12deg] px-3 py-1 border-2 border-gray-400 mr-2"
                     placeholder="Enter your answer..."
 
                 />
                 <Button
                     onClick={checkAnswer}
-                    add="skew-x-[-12deg] text-white text-5xl py-1"
+                    add="skew-x-[-12deg] text-white text-4xl py-1"
 
                 >
                   Check
