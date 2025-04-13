@@ -93,6 +93,14 @@ export const instructions = {
         action: 'Move right',
       },
       {
+        keys: ['A', 'arrowLeft'],
+        action: 'Slide left',
+      },
+      {
+        keys: ['D', 'arrowRight'],
+        action: 'Slide right',
+      },
+      {
         keys: ['space'],
         action: 'Start game',
       },

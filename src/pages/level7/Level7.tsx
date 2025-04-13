@@ -127,15 +127,15 @@ const Level7 = () => {
       console.log("Canvas created with dimensions:", canvasSizeRef.current);
     } else {
       // Create temporary canvas and wait for assets
-      p5.createCanvas(640, 360).parent(canvasParentRef);
+      p5.createCanvas(800, 360).parent(canvasParentRef);
 
       // Check again once assets are loaded
       const checkInterval = setInterval(() => {
         if (backgroundImgRef.current && !canvasReadyRef.current) {
           clearInterval(checkInterval);
           canvasSizeRef.current = {
-            width: backgroundImgRef.current.width,
-            height: backgroundImgRef.current.height
+            width: 1600,
+            height: 1200,
           };
 
           p5.resizeCanvas(
@@ -241,12 +241,16 @@ const Level7 = () => {
       );
     }
 
-    // Viking movement - only left-right movement
+    // Viking movement - left-right movement with both arrow keys and A/D keys
     const vikingSpeed = p5.width / 64; // Scale speed based on canvas width
-    if (p5.keyIsDown(p5.LEFT_ARROW) && vikingXRef.current > VIKING_WIDTH/2) {
+
+    // Left movement (LEFT arrow or A key)
+    if ((p5.keyIsDown(p5.LEFT_ARROW) || p5.keyIsDown(65)) && vikingXRef.current > VIKING_WIDTH/2) {
       vikingXRef.current -= vikingSpeed;
     }
-    if (p5.keyIsDown(p5.RIGHT_ARROW) && vikingXRef.current < p5.width - VIKING_WIDTH/2) {
+
+    // Right movement (RIGHT arrow or D key)
+    if ((p5.keyIsDown(p5.RIGHT_ARROW) || p5.keyIsDown(68)) && vikingXRef.current < p5.width - VIKING_WIDTH/2) {
       vikingXRef.current += vikingSpeed;
     }
 
@@ -383,20 +387,15 @@ const Level7 = () => {
         justifyContent: 'center',
         padding: '20px'
       }}>
-        <div className="game-inner-container">
+        <motion.div initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.8 }} className="game-inner-container" >
           <div className="game-canvas">
             <h1 className="game-title">Viking vs Fireballs</h1>
             <Sketch preload={preload} setup={setup} draw={draw} mousePressed={mousePressed} />
           </div>
-          <div className="game-instructions">
-            <h2>How to Play:</h2>
-            <p>Use LEFT and RIGHT arrow keys to move the Viking.</p>
-            <p>Avoid the falling fireballs!</p>
-            <p>You have 10 lives, lose 1 for each hit.</p>
-            <p>Game ends after 30 seconds or when you lose all lives.</p>
-            <p>Score: 100 points for surviving minus 10 for each lost life.</p>
-          </div>
-        </div>
+
+        </motion.div>
         <Modal3 open={isModalOpen} onClose={handleModalClose}>
           <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
