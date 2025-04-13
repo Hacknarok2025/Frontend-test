@@ -11,6 +11,7 @@ const Input = ({ size, add, placeholder, type, onChange }: InputProps) => {
   return (
     <input
       onChange={onChange}
+      required
       type={type}
       className={`${add} m-2 border-2 border-solid border-[#00000]  text-${size} text-black px-6 py-3  transition-all duration-500 transform focus:scale-110 `}
       placeholder={placeholder}
