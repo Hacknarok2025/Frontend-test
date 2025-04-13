@@ -1,6 +1,6 @@
 export const instructions = {
   1: {
-    desc: 'In the frozen realm of Niflheim, decipher the runic word before time runs out. Type your answer to test your knowledge of ancient Norse runes.',
+    desc: 'In the frozen realm of Niflheim, decrypt the runic word before time runs out. Type your answer to test your knowledge of ancient Norse runes.',
     buttons: [
       {
         keys: ['A-Z'],
@@ -34,22 +34,22 @@ export const instructions = {
     ],
   },
   3: {
-    desc: 'Slide across the icy plains of Jotunheim to collect Mjolnir pieces. Once moving, you cannot stop until hitting an obstacle.',
+    desc: 'Slide across the  🥶 i c y 🥶  plains of Jotunheim to collect Mjolnir pieces. Once moving, you cannot stop until hitting an obstacle.',
     buttons: [
       {
-        keys: ['W', 'arrowUp'],
+        keys: ['w', 'arrowUp'],
         action: 'Slide up',
       },
       {
-        keys: ['S', 'arrowDown'],
+        keys: ['s', 'arrowDown'],
         action: 'Slide down',
       },
       {
-        keys: ['A', 'arrowLeft'],
+        keys: ['a', 'arrowLeft'],
         action: 'Slide left',
       },
       {
-        keys: ['D', 'arrowRight'],
+        keys: ['d', 'arrowRight'],
         action: 'Slide right',
       },
     ],
@@ -59,7 +59,11 @@ export const instructions = {
     buttons: [
       {
         keys: ['mouseClick'],
-        action: 'Catch items',
+        action: 'Catch hammers (+1 point)',
+      },
+      {
+        keys: ['mouseClick'],
+        action: 'Avoid skulls (-2 points)',
       },
     ],
   },
@@ -94,7 +98,7 @@ export const instructions = {
       },
       {
         keys: ['space'],
-        action: 'Start game',
+        action: 'Start/restart game',
       },
     ],
   },

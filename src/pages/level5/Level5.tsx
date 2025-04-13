@@ -403,7 +403,7 @@ const Level5 = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center p-2 overflow-hidden"
       style={{
         backgroundImage: "url('/imgs/level5.webp')",
         backgroundSize: 'cover',
@@ -415,37 +415,37 @@ const Level5 = () => {
         left: 0,
       }}
     >
-      <div className="bg-black/60 p-4 rounded-lg shadow-2xl w-full max-w-3xl mx-auto">
-        <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+      <div className="bg-black/60 p-3 rounded-lg shadow-2xl w-full max-w-3xl mx-auto">
+        <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
           <h1
-            className="text-3xl font-bold text-white"
+            className="text-2xl font-bold text-white"
             style={{ fontFamily: 'Norse, serif' }}
           >
             Runes of the Future
           </h1>
           <div className="flex gap-2 flex-wrap">
-            <div className="bg-black/70 p-1.5 rounded text-white text-base">
+            <div className="bg-black/70 p-1 rounded text-white text-sm">
               <span>Time: {timeDisplay}</span>
             </div>
-            <div className="bg-black/70 p-1.5 rounded text-white text-base">
+            <div className="bg-black/70 p-1 rounded text-white text-sm">
               <span>
                 Score: {score}/{targetScore}
               </span>
             </div>
-            <div className="bg-black/70 p-1.5 rounded text-white text-base">
+            <div className="bg-black/70 p-1 rounded text-white text-sm">
               <span>Moves: {moves}</span>
             </div>
           </div>
         </div>
 
-        <div className="mb-4 bg-gray-200 h-3 rounded-full">
+        <div className="mb-2 bg-gray-200 h-2 rounded-full">
           <div
-            className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${Math.min((score / targetScore) * 100, 100)}%` }}
           ></div>
         </div>
 
-        <div className="text-center mb-4 text-white text-sm">
+        <div className="text-center mb-2 text-white text-xs">
           <p>
             Match 3+ identical runes to reveal Vanir wisdom. Reach {targetScore}{' '}
             points to win!
@@ -453,10 +453,10 @@ const Level5 = () => {
         </div>
 
         <div
-          className="grid grid-cols-8 gap-0.5 bg-black/70 p-2 rounded-lg mx-auto"
+          className="grid grid-cols-8 gap-0.5 bg-black/70 p-1.5 rounded-lg mx-auto"
           ref={boardRef}
           style={{
-            maxWidth: 'min(100%, 75vh)',
+            maxWidth: 'min(100%, 70vh)',
             width: '100%',
             aspectRatio: '1/1',
           }}
@@ -517,7 +517,7 @@ const Level5 = () => {
               }}
             >
               <span
-                className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white select-none"
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-white select-none"
                 style={{ fontFamily: 'Norse, serif' }}
               >
                 {rune.symbol}
@@ -526,10 +526,10 @@ const Level5 = () => {
           ))}
         </div>
 
-        <div className="mt-4 flex justify-end">
+        <div className="mt-2 flex justify-end">
           <Button
             onClick={startGame}
-            add="px-4 py-1.5 text-base hover:bg-white hover:text-black border-2 border-solid border-white text-white"
+            add="px-3 py-1 text-base hover:bg-white hover:text-black border-2 border-solid border-white text-white"
           >
             New Game
           </Button>
