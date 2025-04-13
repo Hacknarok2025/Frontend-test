@@ -14,7 +14,7 @@ const levelNames = {
   2: 'Helheim',
   3: 'Jotunheim',
   4: 'Nidavell',
-  5: 'Vanahei',
+  5: 'Vanaheim',
   6: 'Midgard',
   7: 'Muspelheim',
   8: 'Alfheim',
