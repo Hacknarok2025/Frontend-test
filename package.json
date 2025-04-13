@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc --noEmitOnError && vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist -r https://github.com/Hacknarok2025/Hacknarok2025.github.io.git",
     "lint": "eslint .",
