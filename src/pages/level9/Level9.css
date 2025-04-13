@@ -1,0 +1,203 @@
+.asgard-game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0a1525; /* Darker background */
+  position: relative;
+  background-image: url('/imgs/level9.webp'); /* Changed background image to level9.webp */
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+}
+
+.asgard-game-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(10, 21, 37, 0.7) 0%, rgba(7, 13, 27, 0.9) 70%);
+  z-index: 0;
+}
+
+.game-inner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 95vw;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.game-title {
+  font-size: 3rem;
+  margin: 15px 0;
+  color: #f8c630; /* Gold text for Norse theme */
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7),
+               0 0 20px rgba(255, 215, 0, 0.5),
+               2px 2px 4px rgba(0, 0, 0, 0.9);
+  font-family: 'Norse', 'Arial', sans-serif;
+  letter-spacing: 3px;
+  position: relative;
+}
+
+.game-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #f8c630, transparent);
+}
+
+.game-canvas {
+  border: 4px solid #926c15;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4),
+              0 0 30px rgba(59, 130, 246, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.game-canvas::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #f8c630;
+  border-radius: 10px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.game-canvas canvas {
+  display: block !important;
+  max-width: 100% !important;
+  max-height: 70vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+.game-instructions {
+  margin-top: 20px;
+  background-color: rgba(23, 37, 84, 0.8); /* Ciemniejsze półprzezroczyste tło */
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #926c15; /* Złota ramka */
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+  color: #ffffff; /* Biały tekst */
+  position: relative;
+  overflow: hidden;
+}
+
+.game-instructions::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/imgs/tree-bg.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.05;
+  z-index: -1;
+}
+
+.game-instructions h2 {
+  color: #f8c630; /* Złoty tekst */
+  margin: 5px 0 15px;
+  font-family: 'Norse', 'Arial', sans-serif;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  position: relative;
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+.game-instructions h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #f8c630, transparent);
+}
+
+.game-instructions p {
+  margin: 12px 0;
+  font-size: 1.1rem;
+  color: #ffffff; /* Biały tekst */
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  font-family: 'Arial', sans-serif;
+  line-height: 1.5;
+}
+
+@media (max-width: 840px) {
+  .asgard-game-container {
+    padding: 5px;
+  }
+  
+  .game-title {
+    font-size: 2rem;
+    margin: 10px 0;
+  }
+  
+  .game-instructions {
+    padding: 12px;
+    margin-top: 10px;
+  }
+  
+  .game-instructions p {
+    font-size: 0.95rem;
+  }
+}
+
+/* Using the Norse font from the workspace */
+@font-face {
+  font-family: 'Norse';
+  src: url('/fonts/Norse-KaWl.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Norse';
+  src: url('/fonts/NorseBold-2Kge.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Animation dla efektów świetlnych */
+@keyframes glow {
+  0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(59, 130, 246, 0.6); }
+  100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.4); }
+}
+
+.game-canvas {
+  animation: glow 3s infinite ease-in-out;
+}
