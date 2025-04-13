@@ -24,8 +24,8 @@ const fetchFromApi = async <T>(path: string) => {
   }
 };
 
-export const fetchEvents = async () => {
-  const result = await fetchFromApi<EventType[]>('/events');
+export const fetchLeaderboard = async () => {
+  const result = await fetchFromApi<any>('/leaderboard');
 
   return result;
 };

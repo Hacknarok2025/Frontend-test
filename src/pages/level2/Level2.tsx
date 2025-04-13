@@ -3,6 +3,7 @@ import type p5Types from 'p5';
 import Sketch from 'react-p5';
 import { motion, AnimatePresence } from 'framer-motion';
 import Modal3 from '@/commons/Modal3.tsx';
+import { useUser } from '@/context/useUser';
 
 const CELL_SIZE = 40;
 const COLS = 20;
@@ -18,6 +19,7 @@ interface Player {
 }
 
 const Level2 = () => {
+  const { user, updateScore, updateLevel } = useUser();
   const [isVisible, setIsVisible] = useState(false);
   const playerImage = useRef<p5Types.Image | null>(null);
   const hammerImage = useRef<p5Types.Image | null>(null);
@@ -68,6 +70,35 @@ const Level2 = () => {
       if (interval) clearInterval(interval);
     };
   }, [isVisible, startTime, endTime]);
+
+  useEffect(() => {
+    if (endTime) {
+      const finalTime = Math.floor((endTime - startTime!) / 1000);
+      setCurrentTime(finalTime);
+
+      // Calculate score based on time
+      const gameScore =
+        finalTime <= GRACE_PERIOD
+          ? INITIAL_SCORE
+          : Math.max(
+              0,
+              INITIAL_SCORE -
+                Math.floor((finalTime - GRACE_PERIOD) * SCORE_MULTIPLIER)
+            );
+
+      setScore(gameScore);
+
+      console.log(gameScore);
+
+      // Update global score and level
+      if (user?.current_level === 2) {
+        updateScore(user?.score ? user.score + gameScore : gameScore);
+        updateLevel(3);
+      }
+      setShowScore(true);
+      setModalOpen3(true);
+    }
+  }, [endTime]);
 
   useEffect(() => {
     setIsVisible(true);

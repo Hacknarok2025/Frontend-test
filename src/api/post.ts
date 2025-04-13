@@ -1,13 +1,19 @@
-import { API_BASE_URL, NumbersType as NumbersType, ResultType } from "./types";
+import {
+  API_BASE_URL,
+  DBUserData,
+  NumbersType as NumbersType,
+  PlayerData,
+  ResultType,
+} from './types';
 
 const postToApi = async <T, U>(path: string, body: T) => {
   const url = API_BASE_URL + path;
 
   try {
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });
@@ -19,22 +25,25 @@ const postToApi = async <T, U>(path: string, body: T) => {
 
     return (await response.json()) as Promise<U>;
   } catch (error) {
-    console.error("API call failed:", error);
+    console.error('API call failed:', error);
     if (error instanceof SyntaxError) {
-      throw new Error("The response body cannot be parsed as JSON");
+      throw new Error('The response body cannot be parsed as JSON');
     }
 
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error("An unknown error occurred.");
+    throw new Error('An unknown error occurred.');
   }
 };
 
-export const postForResult = (body: NumbersType) => {
-  return postToApi<NumbersType, ResultType>("/calculate", body);
+export const postPlayerData = (body: PlayerData) => {
+  return postToApi<PlayerData, DBUserData>('/users/login', body);
 };
 
-// export const postText = (body: TextType) => {
-//   return postToApi<TextType, NotFilledFlashcardsType>("/text", body);
-// };
+export const postNewScore = (body: any) => {
+  return postToApi<any, any>(
+    `/levels/${body.levelId}/complete%user_id=${body.userId}`,
+    { score: body.score }
+  );
+};

@@ -2,6 +2,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/own/button';
 import Input from '@/components/own/input';
 import { useNavigate } from 'react-router-dom';
+import { postPlayerData } from '@/api/post';
+import { useState } from 'react';
+import { useUser } from '@/context/useUser';
 
 interface ModalProps {
   open: boolean;
@@ -9,12 +12,38 @@ interface ModalProps {
 }
 
 const Modal1: React.FC<ModalProps> = ({ open, onClose }) => {
-  const navigate = useNavigate(); // Używamy useNavigate zamiast useRouter
+  const navigate = useNavigate();
+  const { setUser } = useUser();
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    onClose(); // Zamknij modal
-    navigate('/tree', { state: { scrollToBottom: true } }); // Dodajemy state do nawigacji
+  const handleLogin = async () => {
+    await loginUser();
+    onClose();
+    navigate('/tree', { state: { scrollToBottom: true } });
   };
+
+  const loginUser = async () => {
+    console.log({
+      name,
+      email: 'a',
+      password,
+    });
+    try {
+      const result = await postPlayerData({
+        name,
+        email: 'a',
+        password,
+      });
+
+      setUser(result);
+
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -50,13 +79,18 @@ const Modal1: React.FC<ModalProps> = ({ open, onClose }) => {
               </button>
             </div>
             <form className="flex justify-center flex-col items-start">
-              <Input placeholder={'Name'} size={'2xl'} />
-              <Input type={'email'} placeholder={'Email'} size={'2xl'} />
-              <Input type={'password'} placeholder={'Password'} size={'2xl'} />
+              <Input
+                placeholder={'Name'}
+                size={'2xl'}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
               <Input
                 type={'password'}
-                placeholder={'Repeat Password'}
+                placeholder={'Password'}
                 size={'2xl'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </form>
             <div className="mt-6 flex justify-end skew-x-[-24deg]">
