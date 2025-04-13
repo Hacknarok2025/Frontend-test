@@ -354,7 +354,7 @@ const Level1 = () => {
                   onClick={() => { resetGame(); setModalOpen4(false) }}
                   buttonText={"Again"}
                   open={isModalOpen4}
-                  onClose={() => setModalOpen4(false)}
+                  onClose={() => {setModalOpen4(false) ; resetGame()}}
               >
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
