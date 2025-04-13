@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import Button from '../../components/own/button';
 import Modal3 from "@/commons/Modal3.tsx";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -318,14 +317,14 @@ const Level1 = () => {
                     placeholder="Enter your answer..."
 
                 />
-                <Button
+                <motion.button
                     onClick={checkAnswer}
-                    add="skew-x-[-12deg] text-white text-5xl py-1"
+                    className={`skew-x-[-12deg] text-white text-5xl py-1 bg-blue-500 px-4 rounded`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                 >
                   Check
-                </Button>
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>
@@ -369,7 +368,7 @@ const Level1 = () => {
           )}
         </AnimatePresence>
 
-        <style jsx global>{`
+        <style>{`
           @keyframes fall {
             to {
               transform: translateY(100vh) rotate(360deg);
