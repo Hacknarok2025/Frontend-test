@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Button from '@/components/own/button';
+import Modal3 from "@/commons/Modal3.tsx";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Define the question type
 interface Question {
   id: number;
   question: string;
@@ -10,7 +11,6 @@ interface Question {
   explanation: string;
 }
 
-// Question pool - moved outside the component
 const questionPool: Question[] = [
   {
     id: 1,
@@ -71,7 +71,6 @@ const questionPool: Question[] = [
 ];
 
 const Level8 = () => {
-  // State for randomly selected questions
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -81,24 +80,25 @@ const Level8 = () => {
   const [timer, setTimer] = useState(30);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showFinalScore, setShowFinalScore] = useState(false);
+  const [isModalOpen3, setModalOpen3] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Select random questions on component mount
   useEffect(() => {
-    // Shuffle and pick 5 random questions
+    setIsVisible(true);
     const shuffledQuestions = [...questionPool].sort(() => 0.5 - Math.random());
     const selectedQuestions = shuffledQuestions.slice(0, 5);
     setQuestions(selectedQuestions);
+    return () => setIsVisible(false);
   }, []);
 
-  // Reset timer when moving to a new question
   useEffect(() => {
     if (quizCompleted || showExplanation || showFinalScore || questions.length === 0) return;
-    
+
     const countdown = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer <= 1) {
           clearInterval(countdown);
-          handleAnswer(-1); // Time's up, handle as wrong answer
+          handleAnswer(-1);
           return 0;
         }
         return prevTimer - 1;
@@ -111,12 +111,11 @@ const Level8 = () => {
   const handleAnswer = (answerIndex: number) => {
     const currentQuestion = questions[currentQuestionIndex];
     setSelectedAnswer(answerIndex);
-    
-    // Check if the answer is correct
+
     if (answerIndex === currentQuestion.correctAnswer) {
       setScore((prevScore) => prevScore + 1);
     }
-    
+
     setShowResult(true);
     setShowExplanation(true);
   };
@@ -125,22 +124,22 @@ const Level8 = () => {
     setShowResult(false);
     setSelectedAnswer(null);
     setShowExplanation(false);
-    
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setTimer(30); // Reset timer for new question
+      setTimer(30);
     } else {
       setQuizCompleted(true);
       setShowFinalScore(true);
+      setModalOpen3(true);
     }
   };
 
   const restartQuiz = () => {
-    // Shuffle and pick new random questions
     const shuffledQuestions = [...questionPool].sort(() => 0.5 - Math.random());
     const selectedQuestions = shuffledQuestions.slice(0, 5);
     setQuestions(selectedQuestions);
-    
+
     setCurrentQuestionIndex(0);
     setScore(0);
     setSelectedAnswer(null);
@@ -149,116 +148,164 @@ const Level8 = () => {
     setTimer(30);
     setShowExplanation(false);
     setShowFinalScore(false);
+    setModalOpen3(false);
   };
 
-  // Check if questions are loaded
-  if (questions.length === 0) {
-    return (
-      <div className="min-h-screen bg-[#18181b] text-white flex flex-col items-center justify-center">
-        <p className="text-xl norse">Loading quiz...</p>
-      </div>
-    );
-  }
 
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-[#18181b] text-white flex flex-col items-center justify-center py-8 px-4 md:px-0 relative">
-      <div 
-        className="fixed top-0 left-0 w-full h-full z-0 bg-cover bg-center opacity-20"
-        style={{ backgroundImage: "url('/imgs/tree-bg.png')" }}
-      ></div>
-      
-      <div className="relative z-10 w-full max-w-3xl">
-        <div className="mb-6 text-center">
-          <h1 className="text-5xl font-bold mb-2 norse">
-            Norse Mythology
-          </h1>
-          <p className="text-lg norse">Level 8: Norse Mythology Quiz</p>
-        </div>
+      <AnimatePresence>
+        {isVisible && (
+            <motion.div
 
-        {!quizCompleted ? (
-          <div className="bg-[#27272a] p-6 rounded-lg shadow-xl border border-[#3f3f46]">
-            <div className="flex justify-between mb-3">
-              <span className="text-lg norse">Question {currentQuestionIndex + 1}/{questions.length}</span>
-              <span className="text-lg norse">Score: {score}/{questions.length}</span>
-            </div>
-            
-            <div className="mb-3 w-full bg-[#3f3f46] h-2 rounded-full">
-              <div 
-                className="h-2 bg-blue-500 rounded-full transition-all duration-200"
-                style={{ width: `${(timer / 30) * 100}%`, backgroundColor: timer < 10 ? '#ef4444' : '#3b82f6' }}
-              ></div>
-            </div>
-            
-            <h2 className="text-2xl font-bold mb-4 norse">{currentQuestion.question}</h2>
-            <div className="space-y-2 mb-3">
-              {currentQuestion.answers.map((answer, index) => (
-                <button
-                  key={index}
-                  onClick={() => !showResult && handleAnswer(index)}
-                  disabled={showResult}
-                  className={`w-full p-3 text-left rounded-lg transition-all duration-300 transform hover:scale-[1.01] border norse text-lg ${
-                    selectedAnswer === index
-                      ? index === currentQuestion.correctAnswer
-                        ? "border-green-500 bg-green-500/20"
-                        : "border-red-500 bg-red-500/20"
-                      : selectedAnswer !== null && index === currentQuestion.correctAnswer
-                      ? "border-green-500 bg-green-500/20"
-                      : "border-[#3f3f46] bg-[#3f3f46]/40 hover:bg-[#3f3f46]"
-                  }`}
-                >
-                  <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span> {answer}
-                </button>
-              ))}
-            </div>
-            
-            <div className={`transition-all duration-300 overflow-hidden ${showExplanation ? 'max-h-28' : 'max-h-0'}`}>
-              {showExplanation && (
-                <div className="mb-2 p-2 bg-[#3f3f46]/50 rounded-lg">
-                  <p className="norse text-base"><span className="font-bold">Explanation:</span> {currentQuestion.explanation}</p>
-                </div>
-              )}
-            </div>
-            
-            <div className={`transition-opacity duration-300 ${showResult ? 'opacity-100' : 'opacity-0 h-0'}`}>
-              {showResult && (
-                <div className="flex justify-center">
-                  <Button 
-                    onClick={handleNextQuestion} 
-                    add="bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 text-sm norse"
-                  >
-                    {currentQuestionIndex < questions.length - 1 ? "Next question" : "Finish quiz"}
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="bg-[#27272a] p-8 rounded-lg shadow-xl border border-[#3f3f46] text-center">
-            <h2 className="text-3xl font-bold mb-4 norse">
-              Quiz Completed!
-            </h2>
-            <p className="text-2xl mb-6 norse">Your score: {score}/{questions.length}</p>
-            
-            {score === questions.length ? (
-              <p className="mb-8 text-green-400 norse">Excellent! You are a master of Norse mythology!</p>
-            ) : score >= questions.length * 0.7 ? (
-              <p className="mb-8 text-blue-400 norse">Good job! You have solid knowledge of Norse mythology.</p>
-            ) : (
-              <p className="mb-8 text-yellow-400 norse">Try again to learn more about Norse mythology!</p>
-            )}
-            
-            <Button 
-              onClick={restartQuiz} 
-              add="bg-blue-600 hover:bg-blue-700 text-white norse"
+                className="min-h-screen bg-[#18181b] text-white flex flex-col items-center justify-center py-8 px-4 md:px-0 relative"
             >
-              Play again
-            </Button>
-          </div>
+              <motion.div
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 0.2 }}
+                  transition={{ delay: 0, duration: 0.8 }}
+                  className="fixed top-0 left-0 w-full h-full z-0 bg-cover bg-center"
+                  style={{ backgroundImage: "url('/imgs/level8.webp')" }}
+              ></motion.div>
+
+              <motion.div
+                  initial={{ y: -50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  className="relative z-10 w-full max-w-3xl"
+              >
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    className="mb-6 text-center"
+                >
+                  <h1 className="text-7xl font-bold mb-2 norse">
+                    Norse Mythology
+                  </h1>
+                  <p className="text-3xl norse">Level 8: Norse Mythology Quiz</p>
+                </motion.div>
+
+                {!quizCompleted &&
+                    <motion.div
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.6, duration: 0.5 }}
+                        className="bg-[#27272a] p-6 rounded-lg shadow-xl border border-[#3f3f46]"
+                    >
+                      <div className="flex justify-between mb-3">
+                        <span className="text-2xl norse">Question {currentQuestionIndex + 1}/{questions.length}</span>
+                        <span className="text-2xl norse">Score: {score}/{questions.length}</span>
+                      </div>
+
+                      <div className="mb-3 w-full bg-[#3f3f46] h-2 rounded-full">
+                        <div
+                            className="h-2 bg-blue-500 rounded-full transition-all duration-200"
+                            style={{ width: `${(timer / 30) * 100}%`, backgroundColor: timer < 10 ? '#ef4444' : '#3b82f6' }}
+                        ></div>
+                      </div>
+
+                      <h2 className="text-5xl font-bold mb-4 norse">{currentQuestion.question}</h2>
+                      <div className="space-y-2 mb-3">
+                        {currentQuestion.answers.map((answer, index) => (
+                            <motion.button
+                                key={index}
+                                onClick={() => !showResult && handleAnswer(index)}
+                                disabled={showResult}
+                                className={`w-full p-3 text-left rounded-lg transition-all duration-300 transform hover:scale-[1.01] border norse text-3xl ${
+                                    selectedAnswer === index
+                                        ? index === currentQuestion.correctAnswer
+                                            ? "border-green-500 bg-green-500/20"
+                                            : "border-red-500 bg-red-500/20"
+                                        : selectedAnswer !== null && index === currentQuestion.correctAnswer
+                                            ? "border-green-500 bg-green-500/20"
+                                            : "border-[#3f3f46] bg-[#3f3f46]/40 hover:bg-[#3f3f46]"
+                                }`}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                              <span className="font-bold mr-3">{String.fromCharCode(65 + index)}.</span> {answer}
+                            </motion.button>
+                        ))}
+                      </div>
+
+                      <div className={`transition-all duration-300 overflow-hidden ${showExplanation ? 'max-h-28' : 'max-h-0'}`}>
+                        {showExplanation && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                                className="mb-2 p-2 bg-[#3f3f46]/50 rounded-lg"
+                            >
+                              <p className="norse text-2xl"><span className="font-bold">Explanation:</span> {currentQuestion.explanation}</p>
+                            </motion.div>
+                        )}
+                      </div>
+
+                      <div className={`transition-opacity duration-300 ${showResult ? 'opacity-100' : 'opacity-0 h-0'}`}>
+                        {showResult && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                                className="flex justify-center"
+                            >
+                              <Button
+                                  onClick={handleNextQuestion}
+                                  add="text-white py-1 px-4 text-4xl text-white norse hover:bg-white hover:text-black"
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                              >
+                                {currentQuestionIndex < questions.length - 1 ? "Next question" : "Finish quiz"}
+                              </Button>
+                            </motion.div>
+                        )}
+                      </div>
+                    </motion.div>
+                }
+
+                <Modal3
+                    open={isModalOpen3}
+                    onClose={() => setModalOpen3(false)}
+
+                >
+                  <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 100 }}
+
+                  >
+                    <h1 className="text-4xl text-black mb-6 font-bold">Good Job Warrior You Win!!!!</h1>
+                    <div className="flex flex-col text-black">
+                      <h2 className="text-4xl font-bold mb-4 norse">
+                        Quiz Completed!
+                      </h2>
+                      <p className="text-3xl mb-6 norse">Your score: {score}/{questions.length}</p>
+
+                      {score === questions.length ? (
+                          <p className="text-2xl mb-4 text-green-400 norse">Excellent! You are a master of Norse mythology!</p>
+                      ) : score >= questions.length * 0.7 ? (
+                          <p className="text-2xl mb-4 text-blue-400 norse">Good job! You have solid knowledge of Norse mythology.</p>
+                      ) : (
+                          <p className="text-2xl mb-4 text-yellow-400 norse">Try again to learn more about Norse mythology!</p>
+                      )}
+
+                      <Button
+                          onClick={restartQuiz}
+                          add="text-4xl px-12 hover:bg-white hover:text-black skew-x-[12deg] border-2 border-solid border-black text-white "
+
+                      >
+                        Play Again
+                      </Button>
+                    </div>
+                  </motion.div>
+                </Modal3>
+              </motion.div>
+            </motion.div>
         )}
-      </div>
-    </div>
+      </AnimatePresence>
   );
 };
 
